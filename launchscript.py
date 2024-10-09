@@ -36,14 +36,20 @@ def main():
     #print(modifyitems)
 
     items = getunixpathitems()
+    rawpathitems = items 
+    for z in tomldata_makeitems:
+        items.append(z)
+    
     items.sort()
+    
     itemclean = '\n'.join(items) # probably a cleaner way to do this
+    
     p = subprocess.run(['echo "' + itemclean + '" | ' + launcher], shell=True,capture_output=True,text=True)
     launcherOutput = p.stdout.strip()
     LAUNCH = ""
-    if launcherOutput in modifyitems:
+    #if launcherOutput in modifyitems:
+    if launcherOutput in modifyitems and launcherOutput in rawpathitems:
         LAUNCH = modifyitems[launcherOutput]
-    #elif ADD CASE FOR fake items
     else:
         LAUNCH = launcherOutput
 
