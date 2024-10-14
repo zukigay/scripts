@@ -1,0 +1,12 @@
+#!/bin/env bash
+pid="$(hyprctl activewindow -j | jq ".pid")"
+set -- $(ps -p "$pid" -o stat)
+pid_state="$(printf '%c' "$2")"
+if [ "$pid_state" = "T" ] || [ "$pid_state" = "T%" ] 
+then
+	notify-send "kill -CONT $pid"
+	kill -CONT "$pid"
+else
+	notify-send "kill -STOP $pid"
+	kill -STOP "$pid"
+fi
