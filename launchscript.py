@@ -53,7 +53,18 @@ def main():
     else:
         LAUNCH = launcherOutput
 
-    subprocess.run([LAUNCH], shell=True) #without shell=True it will not take into account spaces
+    #subprocess.run([LAUNCH], shell=True) #without shell=True it will not take into account spaces
+    LAUNCH_ARGS = LAUNCH.split()
+    #print(LAUNCH)
+    #print(len(LAUNCH_ARGS))
+    if len(LAUNCH_ARGS) > 1: # probably should make this a case statement
+        LAUNCH_CMD = LAUNCH_ARGS[0]
+        LAUNCH_ARGS.pop(0) # launch_args[0] has the file path to the program which we don't need anymore
+        LAUNCH_ARGS.insert(0, LAUNCH_CMD) # first argument is the path to the program itself weird
+        print(LAUNCH_ARGS)
+        os.execvp(LAUNCH_CMD, LAUNCH_ARGS)
+    elif len(LAUNCH_ARGS) == 1:
+        os.execlp(LAUNCH_ARGS[0], LAUNCH_ARGS[0]) # first argument is the path to the program itself weird 
 
 if __name__ == "__main__":
     main()
