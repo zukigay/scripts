@@ -1,0 +1,136 @@
+#!/usr/bin/env python
+import os
+import subprocess
+import json
+from sys import argv
+
+
+def simplerun(runargs):
+    p = subprocess.run(runargs, capture_output=True,text=True)
+    subprocess_output = p.stdout.strip()
+    return subprocess_output
+
+
+def getpkgs(aur_repo_path):
+    # list all folders in current dir and git pull them
+    #UNIXPATH = os.environ.get('').rsplit(":")
+    aur_repo_path_contents = []
+    if os.path.exists(aur_repo_path):
+        listdir = os.listdir(aur_repo_path)
+        aur_repo_path_contents = listdir
+    return aur_repo_path_contents
+
+def makepkg(makepkg_args):
+    env = os.environ.copy()
+    _home = env['HOME']
+    env['PKGDEST'] = _home + '/aur/pkgs' # change this to config based 
+    p = subprocess.run(makepkg_args ,env=env)
+
+
+def updatepkgs(pkgs, pkg_path):
+    if os.path.exists(pkg_path):
+        for x in pkgs:
+            checkpath = pkg_path + "/" + x 
+            if os.path.exists(checkpath):
+                os.chdir(checkpath)
+                print("path exists " + x)
+                gitpull_output = simplerun(["git","pull"])
+                if gitpull_output == "Already up to date.":
+                    print("no updates for " + x)
+                else:
+                    print("update for " + x)
+                    makepkg([ "makepkg", "-si" ]) # make this config dependant
+
+
+def addpkg(pkg_path, pkg_add, aur_repo_url):
+    
+    pkg_full_path = pkg_path + "/" + pkg_add
+
+    env_vars = os.environ.copy()
+    
+    pkg_browser_env = os.environ.get('ssat_pkg_browser') # make this also able to set in config
+    pkg_browser_raw = pkg_browser_env.split(' ')
+    pkg_browser = []
+    for x in pkg_browser_raw:
+        if x == "{pwd}":
+            print("pwd")
+            pkg_browser.append(pkg_full_path)
+        else:
+            pkg_browser.append(x)
+    print(pkg_browser)
+
+    if os.path.exists(pkg_path): 
+        os.chdir(pkg_path)
+        pkg_url = aur_repo_url + pkg_add 
+
+        subprocess.run(["git","clone", pkg_url])
+        
+         
+        if 1 == 1: # make this a config option
+            os.chdir(pkg_path + "/" + pkg_add)
+            #print(pkg_path + "/" + pkg_add)
+            subprocess.run(pkg_browser,env=env_vars)
+            ui = input("makepkg?[y/n]")
+            if ui == "y" or ui == "Y" or ui == "yes":
+                makepkg(["makepkg","-si"]) # make this config dependant
+
+
+
+
+def addpkgs(pkg_path, pkg_add_list):
+    if os.path.exists(pkg_path):
+        for x in pkg_add_list:
+            addpkg(pkg_path,x)
+
+
+def main():
+    mode, second_arg = arg_parse_mode()
+    _home = os.environ.get('HOME') 
+    aur_repo_path = _home + "/aur/src" #example path /home/USER/aur/src
+    # change this to config based
+    aurpkgs = getpkgs(aur_repo_path)
+
+    if not os.path.exists(aur_repo_path): # the program should have a option to make the dir
+        print("no aur/src path :( \nexiting...")
+        quit() # should this be exit()? or are they the same?
+    
+    match mode:
+        case "update":
+            updatepkgs(aurpkgs, aur_repo_path)
+        case "list":
+            for x in aurpkgs:
+                print(x)
+        case "add":
+            addpkg(aur_repo_path, second_arg,"https://aur.archlinux.org/")
+        case _:
+            print("error: no mode called " + mode)
+            exit()
+
+
+def arg_parse_mode():
+    arg_count = len(argv)
+    pkgmode = ""
+    secondarg = ""
+    
+    if arg_count > 1:
+        match argv[1]:
+            case "pull" | "update":
+                pkgmode = "update"
+            case "list":
+                pkgmode = "list"
+            case "add":
+                pkgmode = "add"
+            # case "build":
+            case _:
+                pkgmode = ""
+    if arg_count > 2 and pkgmode == "add":
+        secondarg = argv[2]
+
+    return pkgmode, secondarg
+
+
+
+
+
+if __name__ == "__main__":
+    main()
