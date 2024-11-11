@@ -31,7 +31,7 @@ def updatepkgs(pkgs, pkg_path):
     if os.path.exists(pkg_path):
         for x in pkgs:
             checkpath = pkg_path + "/" + x 
-            if os.path.exists(checkpath):
+            if os.path.exists(checkpath) and os.path.exists(checkpath + "/.git"):
                 os.chdir(checkpath)
                 print("path exists " + x)
                 gitpull_output = simplerun(["git","pull"])
