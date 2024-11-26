@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# add xdg config support
+# add support for changing instance var
+
+
+hyprctl --instance 0 'keyword misc:allow_session_lock_restore' 1
+hyprctl --instance 0 dispatch 'exec ~/.config/hypr/hyprland_lock.sh'
+#hyprctl --instance 0 dispatch 'exec swaylock'
