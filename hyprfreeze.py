@@ -8,7 +8,8 @@ def getpidstate(pid):
     try:
         with open(f"/proc/{pid}/stat") as status_file:
             #piddata = status_file.read.split()
-            return status_file.read().split()[2]
+            #return status_file.read().split()[2]
+            return status_file.read().split(')')[1].split(' ')[1]
     except FileNotFoundError:
         print("hyprctl reporting nonexistent process?\nExiting...")
         exit()
