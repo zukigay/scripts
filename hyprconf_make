@@ -1,0 +1,367 @@
+#!/usr/bin/env python 
+
+
+# hypr config format
+# env = env,value
+# env = env = value
+# $var = value
+# option = value
+# optionCatagory:subOption = value
+# source = ~/.config/config_to_source.conf
+# 
+#
+#type Point = tuple[str, str]
+
+def autoFor(array, num=1):
+    catagory = array[0]
+    array.pop(0)
+    if num == 1:
+        separator = array[0]
+        array.pop(0)
+    else:
+        separator = ""
+    for i in array:
+        confAdd(catagory + separator + i)
+
+def confAdd(value):
+    print(value)
+
+def decBinds(mainMod):
+    binds=f'''
+###################
+### KEYBINDINGS ###
+###################
+
+# See https://wiki.hyprland.org/Configuring/Keywords/
+$mainMod = {mainMod}
+
+# https://wiki.hyprland.org/Configuring/Binds/ 
+# Basic binds
+
+bind = $mainMod, Escape, exit,
+bind = $mainMod, Return, exec, $terminal
+bind = $mainMod, d, exec, $menu
+bind = $mainMod, Q, killactive,
+bind = $mainMod, S, togglefloating,
+
+
+bind = $mainMod, E, exec, $browser
+
+bind=$mainMod,F,fullscreen
+
+bind=$mainMod,z,pin,active
+
+
+#bind = $mainMod, P, pseudo, # dwindle
+#bind = $mainMod, J, togglesplit, # dwindle
+
+# Move focus with mainMod + arrow keys OR mainMod + hjkl.
+bind = $mainMod, left, movefocus, l
+bind = $mainMod, right, movefocus, r
+bind = $mainMod, up, movefocus, u
+bind = $mainMod, down, movefocus, d
+
+bind = $mainMod, h, movefocus, l
+bind = $mainMod, j, movefocus, r
+bind = $mainMod, k, movefocus, u
+bind = $mainMod, l, movefocus, d
+
+# Move windows with mainMod + arrow keys
+bind = $mainMod&Shift, left, movewindow, l
+bind = $mainMod&Shift, right, movewindow, r
+bind = $mainMod&Shift, up, movewindow, u
+bind = $mainMod&Shift, down, movewindow, d
+
+
+# Move windows with mainMod + hjkl keys
+bind = $mainMod&Shift, h, movewindow, l
+bind = $mainMod&Shift, l, movewindow, r
+bind = $mainMod&Shift, k, movewindow, u
+bind = $mainMod&Shift, j, movewindow, d
+
+# Switch workspaces with mainMod + [0-9]
+bind = $mainMod, 1, workspace, 1
+bind = $mainMod, 2, workspace, 2
+bind = $mainMod, 3, workspace, 3
+bind = $mainMod, 4, workspace, 4
+bind = $mainMod, 5, workspace, 5
+bind = $mainMod, 6, workspace, 6
+bind = $mainMod, 7, workspace, 7
+bind = $mainMod, 8, workspace, 8
+bind = $mainMod, 9, workspace, 9
+bind = $mainMod, 0, workspace, 10
+
+# Move active window to a workspace with mainMod + SHIFT + [0-9]
+bind = $mainMod SHIFT, 1, movetoworkspace, 1
+bind = $mainMod SHIFT, 2, movetoworkspace, 2
+bind = $mainMod SHIFT, 3, movetoworkspace, 3
+bind = $mainMod SHIFT, 4, movetoworkspace, 4
+bind = $mainMod SHIFT, 5, movetoworkspace, 5
+bind = $mainMod SHIFT, 6, movetoworkspace, 6
+bind = $mainMod SHIFT, 7, movetoworkspace, 7
+bind = $mainMod SHIFT, 8, movetoworkspace, 8
+bind = $mainMod SHIFT, 9, movetoworkspace, 9
+bind = $mainMod SHIFT, 0, movetoworkspace, 10
+
+# Move active window to a workspace without switching workspaces with mainMod + ALT + [0-9]
+bind = $mainMod&Alt, 1, movetoworkspacesilent, 1
+bind = $mainMod&Alt, 2, movetoworkspacesilent, 2
+bind = $mainMod&Alt, 3, movetoworkspacesilent, 3
+bind = $mainMod&Alt, 4, movetoworkspacesilent, 4
+bind = $mainMod&Alt, 5, movetoworkspacesilent, 5
+bind = $mainMod&Alt, 6, movetoworkspacesilent, 6
+bind = $mainMod&Alt, 7, movetoworkspacesilent, 7
+bind = $mainMod&Alt, 8, movetoworkspacesilent, 8
+bind = $mainMod&Alt, 9, movetoworkspacesilent, 9
+bind = $mainMod&Alt, 0, movetoworkspacesilent, 10
+
+bind = $mainMod&Control, c, centerwindow
+# notifcation daemon
+bind = $mainMod&Shift, n, exec, swaync-client -t -sw
+
+
+# Example special workspace (scratchpad)
+#bind = $mainMod, j, togglespecialworkspace, magic
+#bind = $mainMod SHIFT, j, movetoworkspace, special:magic
+
+
+bind = $mainMod, x, togglespecialworkspace, termscratchpad
+bind = $mainMod, b, togglespecialworkspace, termscratchpad_bluetuith
+
+
+# Scroll through existing workspaces with mainMod + scroll
+bind = $mainMod, mouse_down, workspace, e+1
+bind = $mainMod, mouse_up, workspace, e-1
+
+# disable monitor
+bind = $mainMod, grave,exec,~/.config/hypr/monitor_disable.sh $secondmonitor
+#bind = $mainMod, grave,exec,hyprctl keyword monitor "$secondmonitor , enable && sleep 1 && hyprctl reload"
+
+# Move/resize windows with mainMod + LMB/RMB and dragging
+bindm = $mainMod, mouse:272, movewindow
+bindm = $mainMod, mouse:273, resizewindow
+
+# Show current time bind since I don't use a bar
+binde = $mainMod, w, exec,dunstify -h string:x-dunst-stack-tag:test "time" "$(date)" -t 5000
+
+# Show title and class of window to make things simple
+bind = $mainMod, p, exec, notify-send "$(hyprctl activewindow | grep -E "class|title" | cut -c 2-)"
+
+bind = $mainMod, v, exec, echo -n "$(wl-paste -n)" | xclip -selection clipboard && notify-send "xclip updated"
+
+# Add hyprfreeze.py bind a bind which freezes the activewindow
+bind = $mainMod&Control, p, exec, notify-send "$(hyprfreeze.py)"
+
+# Screenshot binds
+bind = $mainMod, c, exec, grim -g "$(slurp -d)" - | wl-copy
+bind = $mainMod&Alt, c, exec,grim -g "$(slurp -d)"
+
+# Gaming script and reset bind
+bind = $mainMod, F1, exec, ~/.config/hypr/gamemode.sh
+bind = $mainMod, F2, exec, hyprctl reload;pkill waybar;hyprctl dispatch exec waybar 
+bind = $mainMod, F3, exec, pkill waybar 
+
+# screen lock
+bind = $mainMod, BackSpace, exec, ~/.config/hypr/hyprland_lock.sh
+
+
+# Laptop multimedia keys for volume and LCD brightness
+bindel = ,XF86AudioRaiseVolume, exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+
+bindel = ,XF86AudioLowerVolume, exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-
+bindel = ,XF86AudioMute, exec, wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle
+bindel = ,XF86AudioMicMute, exec, wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle
+bindel = ,XF86MonBrightnessUp, exec, brightnessctl s 10%+
+bindel = ,XF86MonBrightnessDown, exec, brightnessctl s 10%-
+
+bindl = , XF86AudioPlay, exec, playerctl play-pause
+bindl = , XF86AudioPrev, exec, playerctl previous
+bindl = , XF86AudioNext, exec, playerctl next
+
+
+# add keys for bluelight
+bindel = $mainMod&Control, 0, exec, busctl --user set-property rs.wl-gammarelay / rs.wl.gammarelay Brightness d 1.0 && busctl --user set-property rs.wl-gammarelay / rs.wl.gammarelay Temperature q 6500 
+bindel = $mainMod&Control, minus, exec, busctl --user -- call rs.wl-gammarelay / rs.wl.gammarelay UpdateTemperature n -100 
+bindel = $mainMod&Control, equal, exec, busctl --user -- call rs.wl-gammarelay / rs.wl.gammarelay UpdateTemperature n +100 
+bindel = $mainMod&Control, bracketleft, exec, busctl --user -- call rs.wl-gammarelay / rs.wl.gammarelay UpdateBrightness d -0.02 
+bindel = $mainMod&Control, bracketright, exec, busctl --user -- call rs.wl-gammarelay / rs.wl.gammarelay UpdateBrightness d +0.02'''
+    return binds
+
+def main():
+    xcursorTheme = "Adwaita"
+    cursorTheme = xcursorTheme
+    cursorSize = 30
+    gtkTheme = "Arc-Dark"
+    iconTheme = "Arc"
+    gapsIn = 5
+    gapsOut = 20
+    borderSize = 2
+    activeBorderCol = "742ffc"
+    inactiveBorderCol = "542aa8"
+    resizeOnBorder = "false"
+    blurEnabled = "true"
+    hyprHandlesDpms = "true"
+    splitWorkSpaces = False 
+    kbLayout = "gb"
+    nvidia = True
+
+    confAdd("$terminal = kitty")
+    confAdd("$browser = firefox")
+    confAdd("$filemanager = pcmanfm-qt")
+    confAdd("$menu = fuzzel")
+
+
+    confAdd("$mainmonitor=DP-4")
+    confAdd("monitor=$mainmonitor,2560x1440@165,auto,auto")
+    confAdd("monitor=$secondmonitor,2560x1440@165,auto-left,auto")
+
+    for i in range(1, 11):
+        #confAdd(f"workspace = {i},monitor:$mainmonitor")
+        if splitWorkSpaces == True:
+            if i < 6:
+                confAdd(f"workspace = {i},monitor:$mainmonitor")
+            elif i > 5:
+                confAdd(f"workspace = {i},monitor:$secondmonitor")
+    
+    execArray = [ "exec-once", " = ", "dunst", "hypridle", "wl-clip-persist --clipboard both", f"hyprctl setcursor {cursorTheme}" ]
+
+
+    
+    gsetArray = [ "exec-once=gsettings set org.gnome.desktop.interface ", 
+                 f"cursor-theme '{xcursorTheme}'",
+                 f"cursor-size  '{cursorSize}'",
+                 f"gtk-theme '{gtkTheme}'",
+                 f"icon-theme '{iconTheme}'"]
+    
+    generalArray = [ "general:", 
+                    f"gaps_in = {gapsIn}", 
+                    f"gaps_out = {gapsOut}", 
+                    f"border_size = {borderSize}",
+                    f"col.inactive_border = rgb({inactiveBorderCol})",
+                    f"col.active_border = rgb({activeBorderCol})",
+                    f"resize_on_border = {resizeOnBorder}",
+                    f"allow_tearing = false",
+                    f"layout = dwindle"] 
+
+    decorationArray = [ "decoration:", "rounding = 2", "active_opacity = 1.0", "inactive_opacity=1.0"  ]
+    blurArray = [ "decoration:blur:", f"enabled = {blurEnabled}", "size = 3", "passes = 1", "vibrancy = 0.1696"  ]
+    dwindleArray = [ "dwindle:", "pseudotile = true", "preserve_split = true" ]
+
+    miscArray = [ "misc:", "enable_swallow = {swallowEnabled}",
+                 "swallow_exception_regex = (ncspot)",
+                 "swallow_regex = (foot|kitty|allacritty|Alacritty)",
+                 "allow_session_lock_restore = 1",
+                 "force_default_wallpaper = 0",
+                 "key_press_enables_dpms = {hyprHandlesDpms}",
+                 "mouse_move_enables_dpms = {hyprHandlesDpms}"]
+    confAdd("master:new_status = master")
+
+
+    confAdd('''animations {
+    enabled = true
+
+    # Default animations, see https://wiki.hyprland.org/Configuring/Animations/ for more
+
+    bezier = myBezier, 0.05, 0.9, 0.1, 1.05
+
+    animation = windows, 1, 7, myBezier
+    animation = windowsOut, 1, 7, default, popin 80%
+    animation = border, 1, 10, default
+    animation = borderangle, 1, 8, default
+    animation = fade, 1, 7, default
+    animation = workspaces, 1, 6, default
+    animation = specialWorkspace, 1, 3, default, fade
+}''')
+
+    confAdd('''# taken from here https://github.com/hyprwm/Hyprland/issues/7661#issuecomment-2335123700
+windowrulev2 = float, class:(team)$, title:^(?!Steam$).*$
+
+windowrulev2 = float, class:(firefox), title:(Picture-in-Picture)
+windowrulev2 = pin, class:(firefox), title:(Picture-in-Picture)
+windowrulev2 = opacity 0.6, class:(firefox), title:(Picture-in-Picture)
+windowrulev2 = nofocus off, class:(firefox), title:(Picture-in-Picture)
+windowrulev2 = noborder, class:(firefox), title:(Picture-in-Picture)
+windowrulev2 = noblur, class:(windowkill) 
+
+windowrulev2 = float, class:(thunar), title:^(File Operation Progress)$
+
+
+# floating portal windows
+windowrulev2 = float, class:(hyprland-share-picker)
+windowrulev2 = float, class:(xdg-desktop-portal-gtk)
+
+windowrulev2 = noanim, class:(bemenu)
+windowrulev2 = noanim, class:(ueberzugpp).*$
+
+windowrulev2 = stayfocused, class:^(Godot)$, title:^(Create)
+
+windowrulev2 = renderunfocused, class:(Slay the Spire), title:(Slay the Spire) # fix slay the spire audio stutter while in background
+windowrulev2 = renderunfocused, class:(pokemon tcg live.exe) # fix slay the spire audio stutter while in background''')
+
+
+    
+
+    envArray = [ "env", " = ", "MOZ_ENABLE_WAYLAND,1"  ]
+
+    envArray.extend([f"XCURSOR_THEME={xcursorTheme}", f"XCURSOR_SIZE,{cursorSize}", f"HYPRCURSOR_SIZE,{cursorSize}"])
+
+    envArray.extend(["XDG_CURRENT_DESKTOP,Hyprland", "XDG_SESSION_TYPE,wayland",
+                     "XDG_SESSION_DESKTOP,Hyprland"])
+
+    envArray.extend([f"XKB_DEFAULT_LAYOUT={kbLayout} # make nested compostitors use gb keyboard layout"])
+
+
+    envArray.extend(["QT_QPA_PLATFORMTHEME,qt5ct:qt6ct"]) # enable qt6ct for theming
+
+
+    if nvidia == True:
+        envArray.extend(["LIBVA_DRIVER_NAME,nvidia",
+                         "GBM_BACKEND,nvidia-drm",
+                         "__GLX_VENDOR_LIBRARY_NAME,nvidia"])
+
+    xwaylandSetArray = [ "xwayland:", "enabled", "force_zero_scaling", "use_nearest_neighbor"  ]  
+    xwaylandArray = arrayAppendAll(xwaylandSetArray, " = true")
+
+    inputArray = [ "input:", f"kb_layout = {kbLayout}", "follow_mouse = 1", "mouse_refocus = 1", "sensitivity = 0", "touchpad:natural_scroll = false" ]
+
+    confAdd('''gestures {
+    workspace_swipe = false
+}''')
+    
+    # add command to `which nvidia-smi` and if it returns 0 then apply nvidia vars
+
+    # apply changes
+    autoFor(execArray)
+    autoFor(inputArray, 0)
+    autoFor(envArray)
+    autoFor(dwindleArray, 0)
+    autoFor(decorationArray, 0)
+    autoFor(blurArray, 0)
+    autoFor(generalArray, 0)
+    autoFor(gsetArray, 0)
+    autoFor(xwaylandArray, 0)
+    confAdd(decBinds("SUPER"))
+    #confAdd(decBinds("alt"))
+
+
+
+
+def arrayAppendAll(array, appendItem = " = true", appendSkipCount=1,reverse=False):
+    newArray = []
+    for i in array:
+        if appendSkipCount == 0:
+            if reverse == False:
+                newArray.append(i + appendItem)
+            else:
+                newArray.append(appendItem + i)
+        else:
+            newArray.append(i)
+            appendSkipCount -= 1  
+    return newArray
+        
+
+
+
+
+
+if __name__ == "__main__": # the idea is that this program will import a python file then has a main function
+    main()
