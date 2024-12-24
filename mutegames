@@ -1,0 +1,104 @@
+#!/usr/bin/env python
+import json
+import argparse
+import os
+import subprocess
+import psutil
+
+def pactlMute(procSerial,mutetype=1):
+    p = subprocess.run(['pactl', 'set-sink-input-mute', str(procSerial), str(mutetype)])
+    print(f"muted {procSerial}")
+
+
+def getPactlSinkPuts():
+    p = subprocess.run(['pactl', "--format=json", "list", "sink-inputs"],capture_output=True,text=True)
+    sinkPuts = p.stdout.strip()
+    sinkPuts_json = json.loads(sinkPuts)
+    
+    procIdList = []
+    procSerialList = []
+    for item in sinkPuts_json:
+        #print(item)
+        procId = item["properties"]["application.process.id"] 
+        procName = item["properties"]["application.name"]
+        procSerial = item["properties"]["object.serial"]
+        #print(procName, procId)
+        procIdList.append(procId)
+        procSerialList.append(procSerial)
+        print(procId, procName, procSerial)
+    return procIdList, procSerialList
+
+def muteAllGames(audioPids, gamePids, audioSerials, mutetype=1):
+    i = -1
+    for audioPid in audioPids:
+        i += 1
+        for gamePid in gamePids:
+            if int(audioPid) == int(gamePid):
+                print(f"match {audioPid} and {gamePid}")
+                pactlMute(audioSerials[i], mutetype)
+            #else:
+            #    print(f"{audioPid} and {gamePid} no match")
+
+def getProcessTreePids(pid, level=0, reapercheck=1):
+    pids = []
+    try:
+        process = psutil.Process(pid)
+        #print(f"{'  ' * level}PID: {process.pid}, Name: {process.name()}")
+        pids.append(process.pid)
+        children = process.children()
+
+        for child in children:
+            if child.name() == "reaper" or reapercheck == 0:  # checks if ether the child process name is reaper or if the reaper check is disabled.
+                childPids = getProcessTreePids(child.pid, level + 1, 0)
+                pids = pids + childPids
+    except psutil.NoSuchProcess:
+        print(f"{'  ' * level}Process with PID {pid} not found")
+    
+    return pids
+
+
+
+# Example usage
+#print_process_tree(1)  # Start with the system's init process
+
+def getAppPid(targetProcName):
+    for proc in psutil.process_iter(['pid', 'name']):
+        #for proc in psutil.process_iter(['pid', 'name', 'username', "cmdline"]):
+        try:
+            procName = proc.name() 
+            if procName == targetProcName:
+                print(f"{targetProcName} {proc.pid}")
+                return proc.pid
+            #else:
+                #print(f"{proc.pid} != {targetProcName}")
+        except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+            pass
+    
+def argParse():
+    parser = argparse.ArgumentParser(
+            prog='mute game script',
+            description='script meant to toggle the mute state of running games',
+            epilog="")
+    parser.add_argument('-m', '--mutetype', default=1) # option to set mute type to mute/unmute/toggle
+    args = parser.parse_args()
+    return args
+
+def muteGames(args):
+    steamPid = getAppPid("steam")
+    print(steamPid) 
+    steamPids = getProcessTreePids(steamPid)
+    steamPids.remove(steamPid)
+    audioPids, audioSerials = getPactlSinkPuts()
+
+    #print("audio pids", audioPids)
+    #print("steam pids", steamPids)
+    #print(len(audioPids))
+    #print(len(audioSerials))
+    muteAllGames(audioPids, steamPids, audioSerials, args.mutetype)
+
+def main():
+    args = argParse()
+    muteGames(args)
+
+if __name__ == '__main__':
+    main()
