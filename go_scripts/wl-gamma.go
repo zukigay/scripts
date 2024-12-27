@@ -24,25 +24,13 @@ func main() {
     go getTemp(messages)
     //go messageHandler(messages)
     
-    /* 
-    for hour := time.Now().Format("3"); int(hour) > 20; hour = time.Now().Format("3") {
-    for hour := time.Now().Format("3"); int(hour) > 20; hour = time.Now().Format("3") {
-    for hour := time.Now().Format("3"); int(hour) > 20; hour = time.Now().Format("3") {
-    for hour := time.Now().Format("3"); int(hour) > 20; hour = time.Now().Format("3") {
-    for hour := time.Now().Format("3"); int(hour) > 20; hour = time.Now().Format("3") {
-    */
     nightTemp := "3300"
     dayTemp := "6500"
     morningHour := 10
     nightHour := 21
     for {
 
-        //currentTime := time.Now().Format(time.TimeOnly)
-        currentTime := time.Now().Add(time.Hour * -4)
-        //.Format(time.TimeOnly)
-
-        //splitTime := strings.Split(currentTime, ":")
-        //hourInt, err := strconv.Atoi(splitTime[0])
+        currentTime := time.Now() //.Add(time.Hour * 26) debug setting NOTE some function's notably SleepTillNextTarget still works off of the system time
         hourInt := currentTime.Hour()
         //messageHandler(messages) // check that the temp hasn't been user altered
         // messageHandler is a endless loop oops
