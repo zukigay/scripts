@@ -53,8 +53,8 @@ func main() {
         } else if temptype == "day"{
             changeTemp(dayTemp, messagesChangeTemp)
         }
-        fmt.Print(hourInt)
-        SleepTillNextTarget(hourInt, morningHour, nightHour)
+        fmt.Println(hourInt)
+        SleepTillNextTarget(hourInt, morningHour, nightHour, currentTime)
     }
 }
 func calcTimeCheck(hourInt int, morningHour int, nightHour int) (string) {
@@ -72,29 +72,29 @@ func calcTimeCheck(hourInt int, morningHour int, nightHour int) (string) {
     return temptype
 }
 
-func SleepTillNextTarget(hourInt int, morningHour int, nightHour int){
+func SleepTillNextTarget(hourInt int, morningHour int, nightHour int,cTime time.Time){
     // cTime is currentTime
-    cTime := time.Now()
+    //cTime := time.Now()//.Add(time.Hour * 5)
     var targetTime time.Time
     if hourInt < morningHour {
         targetTime = getTargetTime(cTime, morningHour, false)
     } else if hourInt >= nightHour {
-        targetTime = getTargetTime(cTime, nightHour, true)
+        targetTime = getTargetTime(cTime, morningHour, true)
     } else if hourInt < nightHour && hourInt >= morningHour {
-        targetTime = getTargetTime(cTime, nightHour, true)
+        targetTime = getTargetTime(cTime, nightHour, false)
     } 
 
-    fmt.Println(cTime, "###SPLIT###",  targetTime)
+    fmt.Println(cTime, "\n",  targetTime)
     time.Sleep(time.Until(targetTime))
 }
 
 func getTargetTime(cTime time.Time, targetHour int, addDay bool) (time.Time){
     var targetTime time.Time
     if addDay == true{ 
-    //                      year          month          day          hour         min sec nanosec timezone
-    targetTime = time.Date(cTime.Year(), cTime.Month(), cTime.Day(), targetHour, 00, 00, 0, cTime.Location())
+    //                      year          month          day          hour                   min         sec nanosec timezone
+    targetTime = time.Date(cTime.Year(), cTime.Month(), cTime.Day() + 1, targetHour, 00, 00, 0, cTime.Location())
     } else if addDay == false{ 
-    //                      year          month          day          hour         min sec nanosec timezone
+    //                      year          month          day                    hour         min sec nanosec timezone
     targetTime = time.Date(cTime.Year(), cTime.Month(), cTime.Day(), targetHour, 00, 00, 0, cTime.Location())
     }
     return targetTime
@@ -112,12 +112,6 @@ func SleepTillNextTargetHour(hourInt int, morningHour int, nightHour int){
     } 
     fmt.Println("sleeping ", sleepHours, "hours")
     time.Sleep(60 * time.Hour * time.Duration(sleepHours)) // flawed since sleeping by hours and not a more procise merserment, leads to subpar reualts 
-
-    /* currently unused, hopfully will switch to using currentTime for more procise sleeping
-    currentTime := time.Now()//.Format(time.TimeOnly)
-    targetTime := currentTime.Add(time.Hour * 5) // adds 5 hours to time
-    formatedTime := targetTime.Format(time.TimeOnly)
-    */ 
 }
 
 func messageHandler(messages chan string){
