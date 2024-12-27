@@ -75,6 +75,35 @@ func calcTimeCheck(hourInt int, morningHour int, nightHour int) (string) {
 }
 
 func SleepTillNextTarget(hourInt int, morningHour int, nightHour int){
+    // cTime is currentTime
+    cTime := time.Now()
+    var targetTime time.Time
+    if hourInt < morningHour {
+        targetTime = getTargetTime(cTime, morningHour, false)
+    } else if hourInt >= nightHour {
+        targetTime = getTargetTime(cTime, nightHour, true)
+    } else if hourInt < nightHour && hourInt >= morningHour {
+        targetTime = getTargetTime(cTime, nightHour, true)
+    } 
+
+    fmt.Println(cTime, "###SPLIT###",  targetTime)
+    time.Sleep(time.Until(targetTime))
+}
+
+func getTargetTime(cTime time.Time, targetHour int, addDay bool) (time.Time){
+    var targetTime time.Time
+    if addDay == true{ 
+    //                      year          month          day          hour         min sec nanosec timezone
+    targetTime = time.Date(cTime.Year(), cTime.Month(), cTime.Day(), targetHour, 00, 00, 0, cTime.Location())
+    } else if addDay == false{ 
+    //                      year          month          day          hour         min sec nanosec timezone
+    targetTime = time.Date(cTime.Year(), cTime.Month(), cTime.Day(), targetHour, 00, 00, 0, cTime.Location())
+    }
+    return targetTime
+}
+
+
+func SleepTillNextTargetHour(hourInt int, morningHour int, nightHour int){
     var sleepHours int
     if hourInt < morningHour {
         sleepHours = morningHour - hourInt
