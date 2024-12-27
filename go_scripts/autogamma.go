@@ -22,8 +22,15 @@ func changeTemp(temp string,tempCmd string, m chan string, verbose bool){
     }
     execute(tempString, m)
 }
-//               nt      dt      mh   nh   verbose tempCmd
-func argParse() (string, string, int, int, bool, string){
+func parseStrToInt(String string) (int) {
+    Int, err := strconv.Atoi(String)
+    if err != nil {
+        panic("error: while parsing " + String + " into int.") 
+    }
+    return Int
+}
+//               nt      dt      mh   nh   mm   nm   verbose tempCmd
+func argParse() (string, string, int, int, int, int, bool, string){
     //layer := "null" 
 
     // create argVars and set defualt values
@@ -31,6 +38,8 @@ func argParse() (string, string, int, int, bool, string){
     dayTemp := "6500"
     morningHour := 10
     nightHour := 21
+    morningMin := 00
+    nightMin := 00
     printArgs := false
     tempCmd := "busctl --user set-property rs.wl-gammarelay / rs.wl.gammarelay Temperature q "
     //getTempCmd := // not yet needed
@@ -57,21 +66,21 @@ func argParse() (string, string, int, int, bool, string){
 
             case "-mh":
                 i++
-                morningHourInt, err := strconv.Atoi(os.Args[i])
-                if err != nil {
-                    panic("error:  while parsing -mh into morningHour.") 
-                }
-                morningHour = morningHourInt
+                morningHour = parseStrToInt(os.Args[i])
 
             case "-nh":
                 i++
-                nightHourInt, err := strconv.Atoi(os.Args[i])
-                if err != nil {
-                    panic("error: while parsing -nh into nightHour.") 
-                }
-                nightHour = nightHourInt
+                nightHour = parseStrToInt(os.Args[i])
+
+            case "-mm":
+                i++
+                morningMin = parseStrToInt(os.Args[i])
+            case "-nm":
+                i++
+                nightMin = parseStrToInt(os.Args[i])
+
             case "-h", "--help":
-                fmt.Println("options\n -h/--help print this text\n -v enable verbose logging\n -nt set night temp\n -dt set day temp\n -mh set moring hour\n -nh set night hour\nexample\n autogamma -nt 3300 -dt 6500 -mh 10 -nh 21")
+                fmt.Println("options\n -h/--help print this text\n -v enable verbose logging\n -nt set night temp\n -dt set day temp\n -mh set moring hour\n -nh set night hour\n -nm set night min\n -mm set morning min\nexample\n autogamma -nt 3300 -dt 6500 -mh 10 -nh 21")
                 os.Exit(0)
 
             /*
@@ -104,12 +113,12 @@ func argParse() (string, string, int, int, bool, string){
         } */
 
     }
-    return nightTemp, dayTemp, morningHour, nightHour, verbose, tempCmd
+    return nightTemp, dayTemp, morningHour, nightHour, morningMin, nightMin, verbose, tempCmd
 
 }
 
 func main() {
-    nightTemp, dayTemp, morningHour, nightHour, verbose, tempCmd := argParse()
+    nightTemp, dayTemp, morningHour, nightHour, morningMin, nightMin, verbose, tempCmd := argParse()
     //messages := make(chan string)
     messagesChangeTemp := make(chan string)
     //go getTemp(messages)
@@ -132,7 +141,7 @@ func main() {
         if verbose == true{
             fmt.Println("HourInt:", hourInt)
         }
-        SleepTillNextTarget(hourInt, morningHour, nightHour, currentTime, verbose)
+        SleepTillNextTarget(hourInt, morningHour, nightHour, currentTime, morningMin, nightMin, verbose)
     }
 }
 func calcTimeCheck(hourInt int, morningHour int, nightHour int, verbose bool ) (string) {
@@ -154,16 +163,16 @@ func calcTimeCheck(hourInt int, morningHour int, nightHour int, verbose bool ) (
     return temptype
 }
 
-func SleepTillNextTarget(hourInt int, morningHour int, nightHour int,cTime time.Time, verbose bool){
+func SleepTillNextTarget(hourInt int, morningHour int, nightHour int,cTime time.Time, morningMin int, nightMin int, verbose bool){
     // cTime is currentTime
     //cTime := time.Now()//.Add(time.Hour * 5)
     var targetTime time.Time
     if hourInt < morningHour {
-        targetTime = getTargetTime(cTime, morningHour, false)
+        targetTime = getTargetTime(cTime, morningHour, morningMin, false)
     } else if hourInt >= nightHour {
-        targetTime = getTargetTime(cTime, morningHour, true)
+        targetTime = getTargetTime(cTime, morningHour, morningMin, true)
     } else if hourInt < nightHour && hourInt >= morningHour {
-        targetTime = getTargetTime(cTime, nightHour, false)
+        targetTime = getTargetTime(cTime, nightHour, nightMin, false)
     } 
 
     if verbose == true{
@@ -172,14 +181,14 @@ func SleepTillNextTarget(hourInt int, morningHour int, nightHour int,cTime time.
     time.Sleep(time.Until(targetTime))
 }
 
-func getTargetTime(cTime time.Time, targetHour int, addDay bool) (time.Time){
+func getTargetTime(cTime time.Time, targetHour int, targetMin int, addDay bool) (time.Time){
     var targetTime time.Time
     if addDay == true{ 
     //                      year          month          day          hour                   min         sec nanosec timezone
-    targetTime = time.Date(cTime.Year(), cTime.Month(), cTime.Day() + 1, targetHour, 00, 00, 0, cTime.Location())
+    targetTime = time.Date(cTime.Year(), cTime.Month(), cTime.Day() + 1, targetHour, targetMin, 00, 0, cTime.Location())
     } else if addDay == false{ 
     //                      year          month          day                    hour         min sec nanosec timezone
-    targetTime = time.Date(cTime.Year(), cTime.Month(), cTime.Day(), targetHour, 00, 00, 0, cTime.Location())
+    targetTime = time.Date(cTime.Year(), cTime.Month(), cTime.Day(), targetHour, targetMin, 00, 0, cTime.Location())
     }
     return targetTime
 }
