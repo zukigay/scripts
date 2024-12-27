@@ -86,10 +86,11 @@ func SleepTillNextTarget(hourInt int, morningHour int, nightHour int){
     fmt.Println("sleeping ", sleepHours, "hours")
     time.Sleep(60 * time.Hour * time.Duration(sleepHours)) // flawed since sleeping by hours and not a more procise merserment, leads to subpar reualts 
 
+    /* currently unused, hopfully will switch to using currentTime for more procise sleeping
     currentTime := time.Now()//.Format(time.TimeOnly)
     targetTime := currentTime.Add(time.Hour * 5) // adds 5 hours to time
     formatedTime := targetTime.Format(time.TimeOnly)
-    return formatedTime
+    */ 
 }
 
 func messageHandler(messages chan string){
