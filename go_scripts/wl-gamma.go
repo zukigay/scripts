@@ -32,37 +32,64 @@ func main() {
     for hour := time.Now().Format("3"); int(hour) > 20; hour = time.Now().Format("3") {
     for hour := time.Now().Format("3"); int(hour) > 20; hour = time.Now().Format("3") {
     */
+    nightTemp := "3300"
+    dayTemp := "6500"
+    morningHour := 10
+    nightHour := 21
     for {
-        hour := time.Now().Format("3")
-        ampm := time.Now().Format("pm")
-        hourInt, err := strconv.Atoi(hour)
+
+        //currentTime := time.Now().Format(time.TimeOnly)
+        currentTime := time.Now().Add(time.Hour * -4).Format(time.TimeOnly)
+
+        splitTime := strings.Split(currentTime, ":")
+        hourInt, err := strconv.Atoi(splitTime[0])
         if err != nil {
             panic(err)
-        }
+        }       
         //messageHandler(messages) // check that the temp hasn't been user altered
         // messageHandler is a endless loop oops
         var temptype string
-        if hourInt < 10 && ampm == "am" {
-            fmt.Println("changing temp to morning temp")
-            temptype = "night"
-        } else if ampm == "am" && hourInt == 12 { // midnight
-            fmt.Println("changing temp to sleep temp")
-            temptype = "night"
-        } else if ampm == "pm" && hourInt > 21 {
-            fmt.Println("changing temp to sleep temp")
-            temptype = "night"
-        } else {
-            fmt.Println("changing temp to day time temp")
-            temptype = "day"
+        temptype = calcTimeCheck(hourInt, morningHour, nightHour)
+        if temptype == "night" || temptype == "morning" {
+            changeTemp(nightTemp, messagesChangeTemp)
+        } else if temptype == "day"{
+            changeTemp(dayTemp, messagesChangeTemp)
         }
-        if temptype == "night"{
-            changeTemp("3300", messagesChangeTemp)
-        }
-        fmt.Print(hourInt, ampm)
-
-        //time.Sleep(60 * time.Second)
-        time.Sleep(1 * time.Second)
+        fmt.Print(hourInt)
+        SleepTillNextTarget(hourInt, morningHour, nightHour)
     }
+}
+func calcTimeCheck(hourInt int, morningHour int, nightHour int) (string) {
+    var temptype string
+    if hourInt < morningHour {
+        fmt.Println("changing temp to morning temp")
+        temptype = "morning"
+    } else if hourInt >= nightHour {
+        fmt.Println("changing temp to sleep temp")
+        temptype = "night"
+    } else {
+        fmt.Println("changing temp to day time temp")
+        temptype = "day"
+    }
+    return temptype
+}
+
+func SleepTillNextTarget(hourInt int, morningHour int, nightHour int){
+    var sleepHours int
+    if hourInt < morningHour {
+        sleepHours = morningHour - hourInt
+    } else if hourInt >= nightHour {
+        sleepHours = hourInt - nightHour
+    } else if hourInt < nightHour && hourInt >= morningHour {
+        sleepHours = nightHour - hourInt
+    } 
+    fmt.Println("sleeping ", sleepHours, "hours")
+    time.Sleep(60 * time.Hour * time.Duration(sleepHours)) // flawed since sleeping by hours and not a more procise merserment, leads to subpar reualts 
+
+    currentTime := time.Now()//.Format(time.TimeOnly)
+    targetTime := currentTime.Add(time.Hour * 5) // adds 5 hours to time
+    formatedTime := targetTime.Format(time.TimeOnly)
+    return formatedTime
 }
 
 func messageHandler(messages chan string){
