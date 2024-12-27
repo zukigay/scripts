@@ -80,7 +80,17 @@ func argParse() (string, string, int, int, int, int, bool, string){
                 nightMin = parseStrToInt(os.Args[i])
 
             case "-h", "--help":
-                fmt.Println("options\n -h/--help print this text\n -v enable verbose logging\n -nt set night temp\n -dt set day temp\n -mh set moring hour\n -nh set night hour\n -nm set night min\n -mm set morning min\nexample\n autogamma -nt 3300 -dt 6500 -mh 10 -nh 21")
+                fmt.Print("options:\n",
+                            "   -h/--help print this text\n",
+                            "   -v enable verbose logging\n",
+                            "   -nt set night temp\n",
+                            "   -dt set day temp\n",
+                            "   -mh set moring hour\n",
+                            "   -nh set night hour\n",
+                            "   -nm set night min\n",
+                            "   -mm set morning min\n",
+                            "example\n",
+                            "   autogamma -nt 3300 -dt 6500 -mh 10 -nh 21\n")
                 os.Exit(0)
 
             /*
