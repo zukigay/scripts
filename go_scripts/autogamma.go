@@ -71,7 +71,7 @@ func argParse() (string, string, int, int, bool, string){
                 }
                 nightHour = nightHourInt
             case "-h", "--help":
-                fmt.Println("options\n -h/--help print this text\n -v enable verbose logging\n -nt set night temp\n -dt set day temp\n -mh set moring hour\n -nh set night hour\nexample\n wl-gamma -nt 3300 -dt 6500 -mh 10 -nh 21")
+                fmt.Println("options\n -h/--help print this text\n -v enable verbose logging\n -nt set night temp\n -dt set day temp\n -mh set moring hour\n -nh set night hour\nexample\n autogamma -nt 3300 -dt 6500 -mh 10 -nh 21")
                 os.Exit(0)
 
             /*
