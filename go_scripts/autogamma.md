@@ -4,10 +4,10 @@
 clean up output such that it could be used as a replacement for the wl-gamma-rs waybar module
 
 ## usage
-`wl-gamma -nt 3300 -dt 6500 -mh 10 -nh 21
+`autogamma -nt 3300 -dt 6500 -mh 10 -nh 21
 
 explaination:
-`wl-gamma`: name of script
+`autogamma`: name of script
 `-nt` command line option to set night temp (defualt 3300)
 `-dt` command line option to set day temp (defualt 6500)
 `-nh` command line options to set night hour (defualt 21)
