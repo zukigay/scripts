@@ -12,14 +12,18 @@ import (
     "strconv"
 )
 
-func changeTemp(temp string, m chan string){
-    //tempString := "busctl --user set-property rs.wl-gammarelay / rs.wl.gammarelay Temperature q " + temp
-    tempString := strings.Join([]string{"busctl --user set-property rs.wl-gammarelay / rs.wl.gammarelay Temperature q ", temp}, "")
-    fmt.Println(tempString)
+func changeTemp(temp string,tempCmd string, m chan string, verbose bool){
+    //tempCmd := "busctl --user set-property rs.wl-gammarelay / rs.wl.gammarelay Temperature q "
+    tempString := strings.Join([]string{tempCmd, temp}, "")
+    //tempString := strings.Join([]string{"busctl --user set-property rs.wl-gammarelay / rs.wl.gammarelay Temperature q ", temp}, "")
+    
+    if verbose == true{
+        fmt.Println(tempString)
+    }
     execute(tempString, m)
 }
-
-func argParse() (string, string, int, int){
+//               nt      dt      mh   nh   verbose tempCmd
+func argParse() (string, string, int, int, bool, string){
     //layer := "null" 
 
     // create argVars and set defualt values
@@ -28,11 +32,16 @@ func argParse() (string, string, int, int){
     morningHour := 10
     nightHour := 21
     printArgs := false
+    tempCmd := "busctl --user set-property rs.wl-gammarelay / rs.wl.gammarelay Temperature q "
+    //getTempCmd := // not yet needed
+    verbose := false 
 
     for i := 1; i < len(os.Args); i++ {
         arg := os.Args[i]
         //if layer == "null" {
             switch arg {
+            case "-v":
+                verbose = true
             case "-p":
                 // toggle printing out args
                 printArgs = true
@@ -62,7 +71,7 @@ func argParse() (string, string, int, int){
                 }
                 nightHour = nightHourInt
             case "-h", "--help":
-                fmt.Println("options\n -h/--help print this text\n -nt set night temp\n -dt set day temp\n -mh set moring hour\n -nh set night hour\nexample\n wl-gamma -nt 3300 -dt 6500 -mh 10 -nh 21")
+                fmt.Println("options\n -h/--help print this text\n -v enable verbose logging\n -nt set night temp\n -dt set day temp\n -mh set moring hour\n -nh set night hour\nexample\n wl-gamma -nt 3300 -dt 6500 -mh 10 -nh 21")
                 os.Exit(0)
 
             /*
@@ -95,12 +104,12 @@ func argParse() (string, string, int, int){
         } */
 
     }
-    return nightTemp, dayTemp, morningHour, nightHour 
+    return nightTemp, dayTemp, morningHour, nightHour, verbose, tempCmd
 
 }
 
 func main() {
-    nightTemp, dayTemp, morningHour, nightHour := argParse()
+    nightTemp, dayTemp, morningHour, nightHour, verbose, tempCmd := argParse()
     //messages := make(chan string)
     messagesChangeTemp := make(chan string)
     //go getTemp(messages)
@@ -114,32 +123,38 @@ func main() {
         //messageHandler(messages) // check that the temp hasn't been user altered
         // messageHandler is a endless loop oops
         var temptype string
-        temptype = calcTimeCheck(hourInt, morningHour, nightHour)
+        temptype = calcTimeCheck(hourInt, morningHour, nightHour, verbose)
         if temptype == "night" || temptype == "morning" {
-            changeTemp(nightTemp, messagesChangeTemp)
+            changeTemp(nightTemp,tempCmd, messagesChangeTemp, verbose)
         } else if temptype == "day"{
-            changeTemp(dayTemp, messagesChangeTemp)
+            changeTemp(dayTemp, tempCmd, messagesChangeTemp, verbose)
         }
-        fmt.Println(hourInt)
-        SleepTillNextTarget(hourInt, morningHour, nightHour, currentTime)
+        if verbose == true{
+            fmt.Println("HourInt:", hourInt)
+        }
+        SleepTillNextTarget(hourInt, morningHour, nightHour, currentTime, verbose)
     }
 }
-func calcTimeCheck(hourInt int, morningHour int, nightHour int) (string) {
+func calcTimeCheck(hourInt int, morningHour int, nightHour int, verbose bool ) (string) {
     var temptype string
+    var verboseTempChangeString string
     if hourInt < morningHour {
-        fmt.Println("changing temp to morning temp")
+        verboseTempChangeString = "changing temp to morning temp"
         temptype = "morning"
     } else if hourInt >= nightHour {
-        fmt.Println("changing temp to sleep temp")
+        verboseTempChangeString = "changing temp to sleep temp"
         temptype = "night"
     } else {
-        fmt.Println("changing temp to day time temp")
+        verboseTempChangeString = "changing temp to day time temp"
         temptype = "day"
+    }
+    if verbose == true{
+        fmt.Println(verboseTempChangeString)
     }
     return temptype
 }
 
-func SleepTillNextTarget(hourInt int, morningHour int, nightHour int,cTime time.Time){
+func SleepTillNextTarget(hourInt int, morningHour int, nightHour int,cTime time.Time, verbose bool){
     // cTime is currentTime
     //cTime := time.Now()//.Add(time.Hour * 5)
     var targetTime time.Time
@@ -151,7 +166,9 @@ func SleepTillNextTarget(hourInt int, morningHour int, nightHour int,cTime time.
         targetTime = getTargetTime(cTime, nightHour, false)
     } 
 
-    fmt.Println(cTime, "\n",  targetTime)
+    if verbose == true{
+        fmt.Println(cTime, "\n", targetTime)
+    }
     time.Sleep(time.Until(targetTime))
 }
 
@@ -167,19 +184,6 @@ func getTargetTime(cTime time.Time, targetHour int, addDay bool) (time.Time){
     return targetTime
 }
 
-
-func SleepTillNextTargetHour(hourInt int, morningHour int, nightHour int){
-    var sleepHours int
-    if hourInt < morningHour {
-        sleepHours = morningHour - hourInt
-    } else if hourInt >= nightHour {
-        sleepHours = hourInt - nightHour
-    } else if hourInt < nightHour && hourInt >= morningHour {
-        sleepHours = nightHour - hourInt
-    } 
-    fmt.Println("sleeping ", sleepHours, "hours")
-    time.Sleep(60 * time.Hour * time.Duration(sleepHours)) // flawed since sleeping by hours and not a more procise merserment, leads to subpar reualts 
-}
 
 func messageHandler(messages chan string){
     for message := range messages {
