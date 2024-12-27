@@ -9,6 +9,7 @@ import (
 	"errors"
 	"strings"
     "time"
+    "strconv"
 )
 
 func changeTemp(temp string, m chan string){
@@ -18,16 +19,94 @@ func changeTemp(temp string, m chan string){
     execute(tempString, m)
 }
 
-func main() {
-    messages := make(chan string)
-    messagesChangeTemp := make(chan string)
-    go getTemp(messages)
-    //go messageHandler(messages)
-    
+func argParse() (string, string, int, int){
+    //layer := "null" 
+
+    // create argVars and set defualt values
     nightTemp := "3300"
     dayTemp := "6500"
     morningHour := 10
     nightHour := 21
+    printArgs := false
+
+    for i := 1; i < len(os.Args); i++ {
+        arg := os.Args[i]
+        //if layer == "null" {
+            switch arg {
+            case "-p":
+                // toggle printing out args
+                printArgs = true
+            case "-nt":
+                // set night temp(string)
+                i++
+                nightTemp = os.Args[i]
+
+            case "-dt":
+                // set day temp(string)
+                i++
+                dayTemp = os.Args[i]
+
+            case "-mh":
+                i++
+                morningHourInt, err := strconv.Atoi(os.Args[i])
+                if err != nil {
+                    panic("error:  while parsing -mh into morningHour.") 
+                }
+                morningHour = morningHourInt
+
+            case "-nh":
+                i++
+                nightHourInt, err := strconv.Atoi(os.Args[i])
+                if err != nil {
+                    panic("error: while parsing -nh into nightHour.") 
+                }
+                nightHour = nightHourInt
+            case "-h", "--help":
+                fmt.Println("options\n -h/--help print this text\n -nt set night temp\n -dt set day temp\n -mh set moring hour\n -nh set night hour\nexample\n wl-gamma -nt 3300 -dt 6500 -mh 10 -nh 21")
+                os.Exit(0)
+
+            /*
+            case "-n":
+                // set hours(two strings) example input "10,21" 
+                i++
+                parseHours := strings.Split(os.Args[i], ",")
+                morningHour, err := strconv.Atoi(parseHours[0])
+                if err != nil {
+                    panic("error: ", err, " while tring to convert -n into morningHour") 
+                }
+                nightHour, err := strconv.Atoi(parseHours[1])
+                if err != nil {
+                    panic("error: ", err, " while tring to convert -n into nightHour") 
+                } */
+
+            default:
+                panic("unknown option '" + arg + "'. exiting...")
+
+
+            }
+            if printArgs == true{
+                fmt.Println(arg)
+            }
+        /* } else{
+            if printArgs == true {
+                fmt.Print(arg)
+            }
+
+        } */
+
+    }
+    return nightTemp, dayTemp, morningHour, nightHour 
+
+}
+
+func main() {
+    nightTemp, dayTemp, morningHour, nightHour := argParse()
+    //messages := make(chan string)
+    messagesChangeTemp := make(chan string)
+    //go getTemp(messages)
+    //go messageHandler(messages)
+    
+
     for {
 
         currentTime := time.Now() //.Add(time.Hour * 26) debug setting NOTE some function's notably SleepTillNextTarget still works off of the system time
