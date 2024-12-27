@@ -20,7 +20,7 @@ explaination:
 The settings can only be set via hard coding or command flags.
 
 ### what if temp is user set?
-only change setting if night is lower temp then current
+only change setting if night is lower temp then current* * currently not implemented, program just ignores currrent temp completely.
 
 ### how is user sleep times set?
 launch option sets morning and then night temp like so "10,21" with comma speration
