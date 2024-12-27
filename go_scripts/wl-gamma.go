@@ -9,7 +9,6 @@ import (
 	"errors"
 	"strings"
     "time"
-    "strconv"
 )
 
 func changeTemp(temp string, m chan string){
@@ -39,13 +38,12 @@ func main() {
     for {
 
         //currentTime := time.Now().Format(time.TimeOnly)
-        currentTime := time.Now().Add(time.Hour * -4).Format(time.TimeOnly)
+        currentTime := time.Now().Add(time.Hour * -4)
+        //.Format(time.TimeOnly)
 
-        splitTime := strings.Split(currentTime, ":")
-        hourInt, err := strconv.Atoi(splitTime[0])
-        if err != nil {
-            panic(err)
-        }       
+        //splitTime := strings.Split(currentTime, ":")
+        //hourInt, err := strconv.Atoi(splitTime[0])
+        hourInt := currentTime.Hour()
         //messageHandler(messages) // check that the temp hasn't been user altered
         // messageHandler is a endless loop oops
         var temptype string
