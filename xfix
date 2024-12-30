@@ -1,0 +1,9 @@
+#!/bin/sh
+arg1="$1"
+if ! [ "$arg1" = "auto" ]
+then
+xprop -f WM_STATE 32c -set WM_STATE 1
+else
+set -- $(xprop -root _NET_ACTIVE_WINDOW)
+xprop -id "$5" -f WM_STATE 32c -set WM_STATE 1
+fi

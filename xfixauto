@@ -1,0 +1,14 @@
+#!/bin/sh
+while read type ; do 
+if [ "$type" = "_NET_ACTIVE_WINDOW(WINDOW): window id # 0x0" ]
+then
+	# wayland window
+	echo "null(maybe wayland) window doing nothing"
+else
+	# xorg window
+	set -- $type
+	#win="$5"
+	#echo "$win"
+	xprop -id "$5" -f WM_STATE 32c -set WM_STATE 1
+fi
+done < <(xprop -spy -root _NET_ACTIVE_WINDOW)
