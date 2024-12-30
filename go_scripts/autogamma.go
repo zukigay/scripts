@@ -179,8 +179,10 @@ func SleepTillNextTarget(hourInt int, morningHour int, nightHour int,cTime time.
     var targetTime time.Time
     if hourInt < morningHour {
         targetTime = getTargetTime(cTime, morningHour, morningMin, false)
-    } else if hourInt >= nightHour {
+    } else if hourInt > nightHour {
         targetTime = getTargetTime(cTime, morningHour, morningMin, true)
+    } else if hourInt = nightHour {
+        targetTime = getTargetTime(cTime, morningHour, morningMin, false)
     } else if hourInt < nightHour && hourInt >= morningHour {
         targetTime = getTargetTime(cTime, nightHour, nightMin, false)
     } 
@@ -193,6 +195,7 @@ func SleepTillNextTarget(hourInt int, morningHour int, nightHour int,cTime time.
 
 func getTargetTime(cTime time.Time, targetHour int, targetMin int, addDay bool) (time.Time){
     var targetTime time.Time
+    // TODO change from having addDay bool arg to auto calulating within function weather day should be increased or not.
     if addDay == true{ 
     //                      year          month          day          hour                   min         sec nanosec timezone
     targetTime = time.Date(cTime.Year(), cTime.Month(), cTime.Day() + 1, targetHour, targetMin, 00, 0, cTime.Location())
