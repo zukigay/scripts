@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 poweroption="$(echo -en "poweroff\0icon\x1fsystem-shutdown-symbolic
 reboot\0icon\x1fsystem-reboot-symbolic
-suspend\0icon\x1fbed-symbolic
+suspend\0icon\x1fface-tired-symbolic
 hyprlock\0icon\x1fsystem-lock-screen-symbolic
 hyprExit\0icon\x1fsystem-log-out-symbolic" | fuzzel -d --icon-theme=Adwaita)"
 
