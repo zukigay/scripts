@@ -24,3 +24,9 @@ only change setting if night is lower temp then current* * currently not impleme
 
 ### how is user sleep times set?
 launch option sets morning and then night temp like so "10,21" with comma speration
+
+
+
+## note for self
+`busctl --user -- get-property rs.wl-gammarelay / rs.wl.gammarelay Temperature` can be used to get the temp without needing to watch the value
+
