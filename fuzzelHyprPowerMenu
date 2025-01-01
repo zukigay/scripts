@@ -8,7 +8,11 @@ hyprExit\0icon\x1fsystem-log-out-symbolic" | fuzzel -d --icon-theme=Adwaita)"
 case $poweroption in
     poweroff) loginctl poweroff;;
     reboot) loginctl reboot;;
-    suspend) loginctl suspend;;
+    suspend) 
+        hyprctl dispatch exec hyprlock
+        sleep 3
+        loginctl suspend
+        ;;
     hyprlock) hyprctl dispatch hyprlock;;
     hyprExit) pkill -x Hyprland;;
 esac
