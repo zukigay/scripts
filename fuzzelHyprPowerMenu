@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+poweroption="$(echo -en "poweroff\0icon\x1fsystem-shutdown-symbolic
+reboot\0icon\x1fsystem-reboot-symbolic
+suspend\0icon\x1fbed-symbolic
+hyprlock\0icon\x1fsystem-lock-screen-symbolic
+hyprExit\0icon\x1fsystem-log-out-symbolic" | fuzzel -d --icon-theme=Adwaita)"
+
+case $poweroption in
+    poweroff) loginctl poweroff;;
+    reboot) loginctl reboot;;
+    suspend) loginctl suspend;;
+    hyprlock) hyprctl dispatch hyprlock;;
+    hyprExit) pkill -x Hyprland;;
+esac
