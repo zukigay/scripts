@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+while [ "$(pgrep -x Hyprland)" != "" ]; do
+
+if [ "$(pgrep -x hyprlock)" != "" ]; then 
+    hyprctl keyword bindl , escape, exec, loginctl suspend
+    while [ "$(pgrep -x hyprlock)" != "" ]; do 
+        sleep 0.2
+    done
+    hyprctl keyword unbind , escape
+fi
+
+done
