@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
+lockpidname="$1"
 while [ "$(pgrep -x Hyprland)" != "" ]; do
 
-if [ "$(pgrep -x hyprlock)" != "" ]; then 
+if [ "$(pgrep -x $lockpidname)" != "" ]; then 
     hyprctl keyword bindl , escape, exec, loginctl suspend
-    while [ "$(pgrep -x hyprlock)" != "" ]; do 
+    while [ "$(pgrep -x $lockpidname)" != "" ]; do 
         sleep 0.2
     done
     hyprctl keyword unbind , escape
