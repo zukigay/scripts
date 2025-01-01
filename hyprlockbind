@@ -1,13 +1,18 @@
 #!/usr/bin/env bash
-lockpidname="$1"
+bluelightfix="$1"
+lockpidname="$2"
 while [ "$(pgrep -x Hyprland)" != "" ]; do
 
 if [ "$(pgrep -x $lockpidname)" != "" ]; then 
-    hyprctl keyword bindl , escape, exec, loginctl suspend
+    hyprctl keyword bindl , escape, exec, loginctl suspend 
     while [ "$(pgrep -x $lockpidname)" != "" ]; do 
         sleep 0.2
+        if [ $bluelightfix == "1" ]; then 
+            busctl --user -- call rs.wl-gammarelay / rs.wl.gammarelay UpdateTemperature n +1 
+            busctl --user -- call rs.wl-gammarelay / rs.wl.gammarelay UpdateTemperature n -1
+        fi
     done
     hyprctl keyword unbind , escape
 fi
-
+sleep 0.2 
 done
