@@ -5,6 +5,8 @@ while [ "$(pgrep -x Hyprland)" != "" ]; do
 
 if [ "$(pgrep -x $lockpidname)" != "" ]; then 
     hyprctl keyword bindl , escape, exec, loginctl suspend 
+    hyprctl keyword bindl , Prior, exec, "pkill swaylock; pkill hyprlock; sleeep 0.2 && swaylock"
+    #notify-send "the screen should be locked rn"
     while [ "$(pgrep -x $lockpidname)" != "" ]; do 
         sleep 0.2
         if [ $bluelightfix == "1" ]; then 
@@ -13,6 +15,7 @@ if [ "$(pgrep -x $lockpidname)" != "" ]; then
         fi
     done
     hyprctl keyword unbind , escape
+    hyprctl keyword unbind , Prior
 fi
 sleep 0.2 
 done
