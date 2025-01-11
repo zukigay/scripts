@@ -1,16 +1,23 @@
 #!/bin/sh
 
-balatro="$@"
 
+# how to use
+# put 
+# balatro_zenity_mod_picker %command% --disable-console
+# in steam balatro launch options
+# and put this script in you $path.
+#
+
+# PUT YOUR BALATRO FOLDER HERE!
 balatrofolder="$HOME/.local/share/Steam/steamapps/compatdata/2379780/pfx/drive_c/users/steamuser/AppData/Roaming/Balatro"
 balatromodfolder="$balatrofolder/Mods"
+# then place the mod packs into a baltro sub folder and put that sub folder dir here!
 balatrosubmodfolder="$balatrofolder/mod_packs"
 
-list_balatrosubmodfolder=$( ls "$balatrosubmodfolder")
+list_balatrosubmodfolder=$(ls "$balatrosubmodfolder")
 
 
-zenitypicked=$(zenity --list   --title="WARNING WILL DELETE MODS FOLDER!!!!!!!" --column="folder" "NONE" $list_balatrosubmodfolder)
-
+zenitypicked=$(zenity --list   --title="WARNING WILL DELETE MODS FOLDER!!!!!!!" --hide-header --column="folder" "NONE" $list_balatrosubmodfolder)
 if [ "$zenitypicked" != "" ] && [ "$zenitypicked" != "NONE"  ] ; then
 rm "$balatromodfolder"
 echo "you picked $zenitypicked"
@@ -18,9 +25,11 @@ echo "you picked $zenitypicked"
 #echo "ln -s $balatrosubmodfolder/$zenitypicked" "$balatromodfolder"
 ln -s "$balatrosubmodfolder/$zenitypicked" "$balatromodfolder"
 
-WINEDLLOVERRIDES="version=n,b" $balatro
+export WINEDLLOVERRIDES="version=n,b" 
+env "$@" 
 
 elif [ "$zenitypicked" == "NONE" ] ; then
     echo "no mods"
-    $balatro
+    #$balatro
+    env "$@"
 fi
