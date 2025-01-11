@@ -1,0 +1,26 @@
+#!/bin/sh
+
+balatro="$@"
+
+balatrofolder="$HOME/.local/share/Steam/steamapps/compatdata/2379780/pfx/drive_c/users/steamuser/AppData/Roaming/Balatro"
+balatromodfolder="$balatrofolder/Mods"
+balatrosubmodfolder="$balatrofolder/mod_packs"
+
+list_balatrosubmodfolder=$( ls "$balatrosubmodfolder")
+
+
+zenitypicked=$(zenity --list   --title="WARNING WILL DELETE MODS FOLDER!!!!!!!" --column="folder" "NONE" $list_balatrosubmodfolder)
+
+if [ "$zenitypicked" != "" ] && [ "$zenitypicked" != "NONE"  ] ; then
+rm "$balatromodfolder"
+echo "you picked $zenitypicked"
+
+#echo "ln -s $balatrosubmodfolder/$zenitypicked" "$balatromodfolder"
+ln -s "$balatrosubmodfolder/$zenitypicked" "$balatromodfolder"
+
+WINEDLLOVERRIDES="version=n,b" $balatro
+
+elif [ "$zenitypicked" == "NONE" ] ; then
+    echo "no mods"
+    $balatro
+fi
