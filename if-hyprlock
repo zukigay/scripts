@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+lockpidname=hyprlock
+cmd="$@"
+
+if [ "$(pgrep -x hyprlock)" != "" ]; then
+    "$@"
+fi
