@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+hyprctl dispatch exec hyprlock
+sleep 3
+loginctl suspend

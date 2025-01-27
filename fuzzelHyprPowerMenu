@@ -9,9 +9,7 @@ case $poweroption in
     poweroff) loginctl poweroff;;
     reboot) loginctl reboot;;
     suspend) 
-        hyprctl dispatch exec hyprlock
-        sleep 3
-        loginctl suspend
+        way_suspend
         ;;
     hyprlock) hyprctl dispatch hyprlock;;
     hyprExit) pkill -x Hyprland;;
