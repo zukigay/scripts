@@ -1,16 +1,21 @@
 #!/usr/bin/env bash
 poweroption="$(echo -en "poweroff\0icon\x1fsystem-shutdown-symbolic
 reboot\0icon\x1fsystem-reboot-symbolic
+reboot-firmware\0icon\x1fsystem-reboot-symbolic
 suspend\0icon\x1fface-tired-symbolic
 hyprlock\0icon\x1fsystem-lock-screen-symbolic
-hyprExit\0icon\x1fsystem-log-out-symbolic" | fuzzel -d --icon-theme=Adwaita)"
+hyprExit\0icon\x1fsystem-log-out-symbolic
+riverExit\0icon\x1fsystem-log-out-symbolic
+" | fuzzel -d --icon-theme=Adwaita)"
 
 case $poweroption in
-    poweroff) loginctl poweroff;;
-    reboot) loginctl reboot;;
+    poweroff) systemctl poweroff || loginctl poweroff;;
+    reboot) systemctl reboot || loginctl reboot;;
+    reboot-firmware) systemctl reboot --firmware || loginctl reboot --firmware;;
     suspend) 
         way_suspend
         ;;
     hyprlock) hyprctl dispatch hyprlock;;
     hyprExit) pkill -x Hyprland;;
+    riverExit) riverctl exit;;
 esac
