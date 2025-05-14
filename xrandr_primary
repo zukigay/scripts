@@ -1,0 +1,2 @@
+#!/bin/sh
+exec xrandr --output $(wlr-randr --json | jq -r '.[] | select(.model=="MSI G272CQP").name') --primary
