@@ -1,4 +1,14 @@
 #!/bin/sh
+
+addtray() {
+    local pidname=$1
+    local text=$2
+    if [ "$(pgrep -x "$pidname")" != "0" ] ; then 
+        echo "^rm(pkill $pidname)$text"
+    fi
+}
+
+# main loop
 while [ "$(pgrep 'dwlb')" ]; do
     rs="^bg()^lm()^rm()^us()^ds()^fg()"
 
@@ -16,5 +26,12 @@ while [ "$(pgrep 'dwlb')" ]; do
     volmute="wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"
     volmic="^bg()^us($volup)^ds($voldown)^lm($volmute)$(wpctl get-volume @DEFAULT_AUDIO_SOURCE@ | sed 's/Volume/Mic/')"
 
-    dwlb -status all "$volmic $vol $date"
+    # fake tray module
+    tray=""
+    tray="$tray $(addtray steam )"
+    tray="$tray $(addtray vesktop )"
+
+
+    # dwlb -status all "$volmic $rs$vol $rs$date"
+    dwlb -status all "$tray  $date"
 done
