@@ -3,8 +3,9 @@
 addtray() {
     local pidname=$1
     local text=$2
-    if [ "$(pgrep -x "$pidname")" != "0" ] ; then 
-        echo "^rm(pkill $pidname)$text"
+    if [ "$(pgrep -x "$pidname")" ] ; then 
+        # echo "^rm(pkill $pidname)$text"
+        echo "^rm(notify-send $pidname)$text"
     fi
 }
 
@@ -28,8 +29,8 @@ while [ "$(pgrep 'dwlb')" ]; do
 
     # fake tray module
     tray=""
-    tray="$tray $(addtray steam )"
-    tray="$tray $(addtray vesktop )"
+    tray="$tray $rs$(addtray steam )"
+    tray="$tray $rs$(addtray electron )"
 
 
     # dwlb -status all "$volmic $rs$vol $rs$date"
