@@ -19,13 +19,13 @@ while [ "$(pgrep 'dwlb')" ]; do
     volup="wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+"
     voldown="wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"
     volmute="wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
-    vol="^bg(ff000044)^us($volup)^ds($voldown)^lm($volmute)$(wpctl get-volume @DEFAULT_AUDIO_SINK@ | sed 's/ume//')"
+    vol="^bg()^us($volup)^ds($voldown)^lm($volmute)$(wpctl get-volume @DEFAULT_AUDIO_SINK@ | sed 's/Volume:/󰕾/')"
 
     # mic control module
     volup="wpctl set-volume @DEFAULT_AUDIO_SOURCE@ 5%+"
     voldown="wpctl set-volume @DEFAULT_AUDIO_SOURCE@ 5%-"
     volmute="wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"
-    volmic="^bg()^us($volup)^ds($voldown)^lm($volmute)$(wpctl get-volume @DEFAULT_AUDIO_SOURCE@ | sed 's/Volume/Mic/')"
+    volmic="^bg()^us($volup)^ds($voldown)^lm($volmute)$(wpctl get-volume @DEFAULT_AUDIO_SOURCE@ | sed 's/Volume://')"
 
     # fake tray module
     tray=""
