@@ -1,0 +1,18 @@
+#!/bin/sh
+pid=0
+pidname="SlayTheSpire"
+while read type ; do 
+if [ "$type" = "_NET_ACTIVE_WINDOW(WINDOW): window id # 0x0" ]
+then
+    wpctl set-mute -p "$(pgrep $pidname)" 1
+else
+	set -- $type
+    classcmd=$(xprop -id "$5" WM_CLASS)
+    set -- $classcmd
+    class=$3
+    echo "class = $class"
+    if [ "$class" == '"Slay' ] ; then
+        wpctl set-mute -p "$(pgrep $pidname)" 0
+    fi
+fi
+done < <(xprop -spy -root _NET_ACTIVE_WINDOW)
