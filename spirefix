@@ -13,6 +13,8 @@ else
     echo "class = $class"
     if [ "$class" == '"Slay' ] ; then
         wpctl set-mute -p "$(pgrep $pidname)" 0
+    else
+        wpctl set-mute -p "$(pgrep $pidname)" 1
     fi
 fi
 done < <(xprop -spy -root _NET_ACTIVE_WINDOW)
