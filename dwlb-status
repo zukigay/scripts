@@ -13,7 +13,7 @@ addtray() {
 while [ "$(pgrep 'dwlb')" ]; do
     rs="^bg()^lm()^rm()^us()^ds()^fg()"
 
-    date="$(date "+%a %d %b %T")"
+    date="$(date "+%a %d %b %H:%M")"
 
     # speaker volume control module
     volup="wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+"
@@ -47,5 +47,6 @@ while [ "$(pgrep 'dwlb')" ]; do
 
 
     dwlb -status all "$tray$rs $vol $rs$volmic$rs $date"
+    sleep 1
     # dwlb -status all "$tray  $date"
 done
