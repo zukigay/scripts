@@ -1,0 +1,10 @@
+#!/bin/sh
+inputfile="$1"
+# outputfile="${inputfile.mov:?}"
+if [ -z "$2" ] ; then
+    outputfile="$inputfile.mov"
+else
+    outputfile="$2"
+fi
+echo ffmpeg -i "$inputfile" -c:v dnxhd -profile:v dnxhr_hq -c:a pcm_s16le -pix_fmt yuv422p "$outputfile"
+ffmpeg -i "$inputfile" -c:v dnxhd -profile:v dnxhr_hq -c:a pcm_s16le -pix_fmt yuv422p "$outputfile"
