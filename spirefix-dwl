@@ -1,0 +1,50 @@
+#!/bin/sh
+title=""
+appid=""
+while read dwldata ; do 
+    # to add a game to this script simply add to this array first the class name (although only the first word of it with a prefixed "
+    set -- $dwldata
+    dataType=$2
+    echo $dataType
+    if [ "$dataType" == "title" ] ; then
+        shift
+        shift
+        title="$@"
+        continue
+    elif [ "$dataType" == "appid" ] ; then
+        shift
+        shift
+        appid="$@"
+    else
+        continue
+    fi
+    echo "current programs appid=$appid title=$title"
+
+    match="false"
+    datatype="appid"
+    for targetdata in 'Slay the Spire' 'SlayTheSpire' "Mosa Lina" "Mosa Lina"  ; do
+
+        if [ "$datatype" == "appid" ] ; then
+            targetappid="$targetdata"
+            echo "targetappid = $targetdata" 
+            datatype="pid"
+            continue
+        else
+            pidname="$targetdata"
+            datatype="appid"
+            echo "targetpid = $targetdata" 
+        fi
+
+
+        pid="$(pgrep "$pidname")"
+        if [ "$pid" ] ; then
+            if [ "$appid" == "$targetappid" ] ; then
+                wpctl set-mute -p "$pid" 0
+            else
+                wpctl set-mute -p "$pid" 1
+            fi
+        else
+            echo "$pidname pid not found"
+        fi
+    done
+done < <(tail -f /tmp/dwl-status)
