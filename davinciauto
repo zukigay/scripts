@@ -1,0 +1,25 @@
+#!/bin/sh
+
+# args=$@
+# set -- $args
+
+inputFolder=$1
+outputFolder=$2
+
+if [ -z $inputFolder ] ; then
+    echo "error no input folder"
+    exit
+fi
+if [ -z $outputFolder ] ; then
+    echo "error no output folder"
+    exit
+fi
+
+# exit
+# inputdir=$@
+
+
+while read file; do 
+    ffmpeg -i "$inputFolder$file" -c:v dnxhd -profile:v dnxhr_hq -c:a pcm_s16le -pix_fmt yuv422p $outputFolder$file.mov
+    # echo ffmpeg -i "$inputFolder/$file" -c:v dnxhd -profile:v dnxhr_hq -c:a pcm_s16le -pix_fmt yuv422p $outputFolder/$file.mov
+done < <(ls $inputFolder)
