@@ -29,5 +29,8 @@ pkgs.mkShell {
     xorg.libXi
     xorg.libX11
   ];
+  shellHook = ''
+  alias o="odin run ."
+  '';
   LIBCLANG_PATH = "${pkgs.libclang.lib}/lib";
 }
