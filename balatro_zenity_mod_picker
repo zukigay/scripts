@@ -12,7 +12,7 @@
 balatrofolder="$HOME/.local/share/Steam/steamapps/compatdata/2379780/pfx/drive_c/users/steamuser/AppData/Roaming/Balatro"
 balatromodfolder="$balatrofolder/Mods"
 # then place the mod packs into a baltro sub folder and put that sub folder dir here!
-balatrosubmodfolder="$balatrofolder/mod_packs"
+balatrosubmodfolder="$HOME/Documents/balatro_mod_packs"
 
 list_balatrosubmodfolder=$(ls "$balatrosubmodfolder")
 
@@ -32,4 +32,6 @@ elif [ "$zenitypicked" == "NONE" ] ; then
     echo "no mods"
     #$balatro
     env "$@"
+    #bash -c "$@"
+
 fi
