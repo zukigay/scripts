@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+#  wlr-randr --output DP-5 --pos 1920,0
+
+# script for adding padding between monitors so the mouse is effectively locked to a monitor which is handy for some mis behaving games
+pos=0
+posStep=6000
+for outputType in HDMI-A- DP- ; do
+for outputNum in 1 2 3 4 5 ; do
+echo wlr-randr --output $outputType$outputNum --pos $pos,0
+wlr-randr --output $outputType$outputNum --pos $pos,0
+pos=$(($pos+$posStep))
+done
+done
