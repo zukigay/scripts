@@ -115,9 +115,14 @@ function main()
     if targetWinDef == true  then
         for i,client in ipairs(clients) do
             if dir == "up" then
-                swapping = client.x < active.x and (client.y > targetWin.y or targetWinDef)
+
+                swapping = client.x < active.x and ((client.x > targetWin.x or targetWinDef) or client.y > targetWin.y) and (client.x >= targetWin.x or targetWinDef) 
+                --and (client.y > targetWin.y or targetWinDef) 
+                -- and (client.x >= targetWin.x or targetWinDef)
             else
-                swapping = client.x > active.x and (client.y < targetWin.y or targetWinDef)
+                swapping = client.x > active.x and ((client.x < targetWin.x or targetWinDef) or client.y < targetWin.y) and (client.x <= targetWin.x or targetWinDef)
+                -- swapping = client.x > active.x and (client.y < targetWin.y or targetWinDef) 
+                -- and (client.x >= targetWin.x or targetWinDef)
             end
             if swapping then
                 targetWinDef = false
