@@ -40,8 +40,24 @@ function hypr_getActive()
     
     return client
 end
+function getWorkspaceHypr()
+    local workspaceHypr = exec_stdout('hyprctl activeworkspace -j | jq .id')
+    -- print("workspace " .. workspaceHypr)
+    if workspaceHypr == nil then
+        -- return CMD_OUTPUT
+        return 1
+        -- return "1"
+    else
+        return tonumber(workspaceHypr)
+    end
+end
 function hypr_getClients(workspace)
-    local clientsRaw = exec_stdout("hyprctl clients -j | jq -r '.[] | select(.workspace.id == " .. workspace .. ") | select(.floating == false) | .at[],.address'")
+    local clientsRaw 
+    if arg[2] == "float" then
+        clientsRaw = exec_stdout("hyprctl clients -j | jq -r '.[] | select(.workspace.id == " .. workspace .. ") | select(.floating == false) | .at[],.address'")
+    else
+        clientsRaw = exec_stdout("hyprctl clients -j | jq -r '.[] | select(.workspace.id == " .. workspace .. ") | .at[],.address'")
+    end
     local clients = {}
     -- local address
     local type=0
@@ -68,7 +84,8 @@ function hypr_getClients(workspace)
     return clients
 end
 function main()
-    local clients = hypr_getClients(2)
+    local workspace = getWorkspaceHypr()
+    local clients = hypr_getClients(workspace)
     local active = hypr_getActive()
     local dir = arg[1]
     -- need to find the next lowist client with the same x
@@ -92,6 +109,19 @@ function main()
                 else
                     print("not swapped"..client.x.." "..client.y)
                 end
+            end
+        end
+    end
+    if targetWinDef == true  then
+        for i,client in ipairs(clients) do
+            if dir == "up" then
+                swapping = client.x < active.x and (client.y > targetWin.y or targetWinDef)
+            else
+                swapping = client.x > active.x and (client.y < targetWin.y or targetWinDef)
+            end
+            if swapping then
+                targetWinDef = false
+                targetWin = client
             end
         end
     end
