@@ -1,4 +1,4 @@
-#!/usr/bin/env lua
+#!/usr/bin/env luajit
 function exec_stdout(args)
     local handle = io.popen(args)
     if handle == nil then
@@ -21,7 +21,7 @@ function hypr_getActive()
     local x=0
     local y=0
     for clientData in string.gmatch(clientsRaw, "([^\n]*)\n?") do
-        print("clientData=" .. clientData.." type"..type)
+        -- print("clientData=" .. clientData.." type"..type)
         if clientData ~= "" then
             if type == 1 then
                 y=clientData
@@ -32,7 +32,7 @@ function hypr_getActive()
             else
                 local address=clientData
                 client={x=tonumber(x),y=tonumber(y),address=address}
-                print("active: x=x".. x .. ",y=".. y .. ",address="..address)
+                -- print("active: x=x".. x .. ",y=".. y .. ",address="..address)
                 type = 0
             end
         end
@@ -64,7 +64,7 @@ function hypr_getClients(workspace)
     local x=0
     local y=0
     for clientData in string.gmatch(clientsRaw, "([^\n]*)\n?") do
-        print("clientData=" .. clientData.." type"..type)
+        -- print("clientData=" .. clientData.." type"..type)
         if clientData ~= "" then
             if type == 1 then
                 y=clientData
@@ -75,7 +75,7 @@ function hypr_getClients(workspace)
             else
                 local address=clientData
                 table.insert(clients,{x=tonumber(x),y=tonumber(y),address=address})
-                print("x=x".. x .. ",y=".. y .. ",address="..address)
+                -- print("x=x".. x .. ",y=".. y .. ",address="..address)
                 type = 0
             end
         end
@@ -95,7 +95,7 @@ function main()
     for i,client in ipairs(clients) do
         if client.address ~= active.address then
             if client.x == active.x then
-                print("same x")
+                -- print("same x")
                 local swapping = false
                 if arg[1] == "up" then
                     swapping = client.y < active.y and (client.y > targetWin.y or targetWinDef) 
@@ -105,9 +105,9 @@ function main()
                 if swapping then
                     targetWinDef = false
                     targetWin = client
-                    print("swapped"..client.x.." "..client.y)
+                    -- print("swapped"..client.x.." "..client.y)
                 else
-                    print("not swapped"..client.x.." "..client.y)
+                    -- print("not swapped"..client.x.." "..client.y)
                 end
             end
         end
@@ -132,7 +132,7 @@ function main()
     end
     if targetWinDef == false then
         os.execute("hyprctl dispatch focuswindow address:'"..targetWin.address.."'")
-        print("hyprctl dispatch focuswindow address:'"..targetWin.address.."'")
+        -- print("hyprctl dispatch focuswindow address:'"..targetWin.address.."'")
     end
 
 end
