@@ -53,7 +53,7 @@ function getWorkspaceHypr()
 end
 function hypr_getClients(workspace)
     local clientsRaw 
-    if arg[2] == "float" then
+    if arg[2] == "nofloat" then
         clientsRaw = exec_stdout("hyprctl clients -j | jq -r '.[] | select(.workspace.id == " .. workspace .. ") | select(.floating == false) | .at[],.address'")
     else
         clientsRaw = exec_stdout("hyprctl clients -j | jq -r '.[] | select(.workspace.id == " .. workspace .. ") | .at[],.address'")
