@@ -1,0 +1,104 @@
+#!/usr/bin/env lua
+function exec_stdout(args)
+    local handle = io.popen(args)
+    if handle == nil then
+        print("handle fail")
+        return
+    end
+    local stdout = handle:read("*a")
+    success = handle:close()
+    if success then
+        -- print('output is:', stdout)
+        return stdout
+    else
+        print('error when executing command ' .. args)
+    end
+end
+function hypr_getActive()
+    local clientsRaw = exec_stdout("hyprctl activewindow -j | jq -r '. | .at[],.address'")
+    local client = {}
+    local type=0
+    local x=0
+    local y=0
+    for clientData in string.gmatch(clientsRaw, "([^\n]*)\n?") do
+        print("clientData=" .. clientData.." type"..type)
+        if clientData ~= "" then
+            if type == 1 then
+                y=clientData
+                type = 2
+            elseif type == 0 then
+                x=clientData
+                type = 1
+            else
+                local address=clientData
+                client={x=tonumber(x),y=tonumber(y),address=address}
+                print("active: x=x".. x .. ",y=".. y .. ",address="..address)
+                type = 0
+            end
+        end
+    end
+    
+    return client
+end
+function hypr_getClients(workspace)
+    local clientsRaw = exec_stdout("hyprctl clients -j | jq -r '.[] | select(.workspace.id == " .. workspace .. ") | select(.floating == false) | .at[],.address'")
+    local clients = {}
+    -- local address
+    local type=0
+    local x=0
+    local y=0
+    for clientData in string.gmatch(clientsRaw, "([^\n]*)\n?") do
+        print("clientData=" .. clientData.." type"..type)
+        if clientData ~= "" then
+            if type == 1 then
+                y=clientData
+                type = 2
+            elseif type == 0 then
+                x=clientData
+                type = 1
+            else
+                local address=clientData
+                table.insert(clients,{x=tonumber(x),y=tonumber(y),address=address})
+                print("x=x".. x .. ",y=".. y .. ",address="..address)
+                type = 0
+            end
+        end
+    end
+    
+    return clients
+end
+function main()
+    local clients = hypr_getClients(2)
+    local active = hypr_getActive()
+    local dir = arg[1]
+    -- need to find the next lowist client with the same x
+    -- local targetWin = clients[1] -- get a starting random targetWin
+    local targetWin = clients[1] -- get a starting random targetWin
+    local targetWinDef = true
+    for i,client in ipairs(clients) do
+        if client.address ~= active.address then
+            if client.x == active.x then
+                print("same x")
+                local swapping = false
+                if arg[1] == "up" then
+                    swapping = client.y < active.y and (client.y > targetWin.y or targetWinDef) 
+                else
+                    swapping = client.y > active.y and (client.y < targetWin.y or targetWinDef) 
+                end
+                if swapping then
+                    targetWinDef = false
+                    targetWin = client
+                    print("swapped"..client.x.." "..client.y)
+                else
+                    print("not swapped"..client.x.." "..client.y)
+                end
+            end
+        end
+    end
+    if targetWinDef == false then
+        os.execute("hyprctl dispatch focuswindow address:'"..targetWin.address.."'")
+        print("hyprctl dispatch focuswindow address:'"..targetWin.address.."'")
+    end
+
+end
+main()
