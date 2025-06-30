@@ -41,14 +41,25 @@ function hypr_getActive()
     return client
 end
 function getWorkspaceHypr()
-    local workspaceHypr = exec_stdout('hyprctl activeworkspace -j | jq .id')
+    local workspaceHypr = exec_stdout('hyprctl activeworkspace -j | jq .windows,.id')
     -- print("workspace " .. workspaceHypr)
-    if workspaceHypr == nil then
-        -- return CMD_OUTPUT
-        return 1
-        -- return "1"
-    else
-        return tonumber(workspaceHypr)
+    local id = true
+    for workspaceData in string.gmatch(workspaceHypr, "([^\n]*)\n?") do
+        if id == true then
+            if workspaceData == "1" then
+                os.exit()
+            elseif workspaceData == "2" then
+                os.execute("hyprctl dispatch cyclenext")
+                os.exit()
+            end
+            id = false
+        elseif workspaceData == nil then
+            -- return CMD_OUTPUT
+            return 1
+            -- return "1"
+        else
+            return tonumber(workspaceData)
+        end
     end
 end
 function hypr_getClients(workspace)
