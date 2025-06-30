@@ -1,10 +1,22 @@
 #!/bin/sh
 inputfile="$1"
-# outputfile="${inputfile.mov:?}"
 if [ -z "$2" ] ; then
-    outputfile="$inputfile.mov"
+    outputfile="$inputfile.mp4"
 else
     outputfile="$2"
 fi
-echo ffmpeg -i "$inputfile" -c:v dnxhd -profile:v dnxhr_hq -c:a pcm_s16le -pix_fmt yuv422p "$outputfile"
-ffmpeg -i "$inputfile" -c:v dnxhd -profile:v dnxhr_hq -c:a pcm_s16le -pix_fmt yuv422p "$outputfile"
+echo ffmpeg -i $@/$# -c:v libsvtav1 -crf 30 -q:v 2 -c:a alac /home/zuki/ResolveMedia/Out/$#.mp4
+
+if [ -z "$DBUS_SESSION_BUS_ADDRESS"] ; then
+export DBUS_SESSION_BUS_ADDRESS=$(cat /tmp/dbus-backup)
+fi
+notify-send "starting conversion" "to $outputfile"
+
+ffmpeg -i "$inputfile" -c:v libsvtav1 -crf 30 -q:v 2 -c:a alac "$outputfile.mp4" && conversionFFmpegWorked=1
+
+
+if [ -z "$conversionFFmpegWorked" ] ; then
+notify-send "filed to convert $inputfile"
+else
+notify-send "converted $inputfile" "to $outputfile" 
+fi
