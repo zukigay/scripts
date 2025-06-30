@@ -1,7 +1,8 @@
 #!/bin/sh
 inputfile="$1"
 if [ -z "$2" ] ; then
-    outputfile="$inputfile.mp4"
+    # outputfile="$inputfile.mp4"
+    outputfile="$HOME/ResolveMedia/Out/$(basename $inputfile).mp4"
 else
     outputfile="$2"
 fi
