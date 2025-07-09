@@ -1,0 +1,2 @@
+#!/bin/sh
+wl-copy 'gamescope --force-grab-cursor --framerate-limit 165 -W 2560 -H 1440 -r 165 -- %command%'
