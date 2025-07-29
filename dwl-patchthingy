@@ -1,0 +1,3 @@
+#!/bin/sh
+#git format-patch main...riverctl --stdout > riverctl.patch
+git format-patch upstream/main..."$@" --stdout > PATCHNAME.patch
