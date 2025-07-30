@@ -8,7 +8,7 @@ addtray() {
         echo "^rm(notify-send $pidname)$text"
     fi
 }
-
+oldvol=""
 # main loop
 while [ "$(pgrep 'dwlb')" ]; do
     rs="^bg()^lm()^rm()^us()^ds()^fg()"
@@ -43,10 +43,9 @@ while [ "$(pgrep 'dwlb')" ]; do
     # fake tray module
     tray=""
     tray="$tray $rs$(addtray steam )"
-    # tray="$tray $rs$(addtray electron )"
+    tray="$tray $rs$(addtray equibop )"
 
 
     dwlb -status all "$tray$rs $vol $rs$volmic$rs $date"
-    sleep 1
     # dwlb -status all "$tray  $date"
 done
