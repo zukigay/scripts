@@ -1,0 +1,22 @@
+#!/bin/sh
+title=""
+appid=""
+while read dwldata ; do 
+    # to add a game to this script simply add to this array first the class name (although only the first word of it with a prefixed "
+    set -- $dwldata
+    dataType=$2
+    # echo $dataType
+    if [ "$dataType" == "title" ] ; then
+        shift
+        shift
+        title="$@"
+        continue
+    elif [ "$dataType" == "appid" ] ; then
+        shift
+        shift
+        appid="$@"
+    else
+        continue
+    fi
+done < <(tail -n 7 /tmp/dwl-status)
+echo "appid='$appid' title='$title'"
