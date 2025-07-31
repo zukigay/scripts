@@ -1,0 +1,5 @@
+#!/bin/sh
+GRIMDIR="$GRIM_DEFAULT_DIR"
+while read output ; do 
+    grim -o "$output" "$GRIMDIR/$(date "+%Y%m%e_%Hh%Mm%Ss_")grim_$output.png"
+done < <(wlr-randr --json | jq -r '.[].name')
