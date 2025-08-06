@@ -5,7 +5,7 @@ addtray() {
     local text=$2
     if [ "$(pgrep -x "$pidname")" ] ; then 
         # echo "^rm(pkill $pidname)$text"
-        echo "^rm(notify-send $pidname)$text"
+        echo " ^rm(notify-send $pidname)$text"
     fi
 }
 oldvol=""
@@ -42,9 +42,9 @@ while [ "$(pgrep 'dwlb')" ]; do
 
     # fake tray module
     tray=""
-    tray="$tray $rs$(addtray steam )"
-    tray="$tray $rs$(addtray equibop )"
-
+    tray="$tray$rs$(addtray steam )"
+    tray="$tray$rs$(addtray equibop )"
+    tray="$tray$rs$(addtray vesktop.bin )"
 
     dwlb -status all "$tray$rs $vol $rs$volmic$rs $date"
     # dwlb -status all "$tray  $date"
