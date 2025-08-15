@@ -10,7 +10,7 @@ addtray() {
 }
 oldvol=""
 # main loop
-while [ "$(pgrep 'dwlb')" ]; do
+while [ "$(pgrep -x 'dwlb')" ]; do
     rs="^bg()^lm()^rm()^us()^ds()^fg()"
 
     date="$(date "+%a %d %b %H:%M")"
