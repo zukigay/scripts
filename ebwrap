@@ -1,0 +1,127 @@
+#!/usr/bin/env python3
+import sys,os,subprocess
+bwrap_args=['bwrap']
+
+# https://sloonz.github.io/posts/sandboxing-2/
+# used as refrence
+
+def pass_env(string):
+    bwrap_args.append('--setenv')
+    bwrap_args.append(string)
+    bwrap_args.append(os.environ[string])
+
+def pass_ro_bind(string):
+    bwrap_args.append('--ro-bind')
+    bwrap_args.append(string)
+    bwrap_args.append(string)
+def pass_bind(string):
+    bwrap_args.append('--bind')
+    bwrap_args.append(string)
+    bwrap_args.append(string)
+
+
+def main():
+    xdg_runtime_dir = os.environ['XDG_RUNTIME_DIR']
+    home_dir = os.environ['HOME']
+    # argv = len(sys.argv) - 1
+    arglen = len(sys.argv)
+    skip = False
+    for argi in range(arglen - 1):
+        if skip == True:
+            skip = False
+            continue 
+        arg = sys.argv[argi + 1]
+        match arg:
+            case "-base":
+                bwrap_args.append('--ro-bind')
+                bwrap_args.append('/usr')
+                bwrap_args.append('/usr')
+                bwrap_args.append('--ro-bind')
+                bwrap_args.append('/bin')
+                bwrap_args.append('/bin')
+                bwrap_args.append('--ro-bind')
+                bwrap_args.append('/lib')
+                bwrap_args.append('/lib')
+                bwrap_args.append('--ro-bind')
+                bwrap_args.append('/lib64')
+                bwrap_args.append('/lib64')
+                bwrap_args.append('--ro-bind')
+                bwrap_args.append('/sbin')
+                bwrap_args.append('/sbin')
+                bwrap_args.append('--ro-bind')
+                bwrap_args.append('/etc')
+                bwrap_args.append('/etc')
+                bwrap_args.append('--proc')
+                bwrap_args.append('/proc')
+                bwrap_args.append('--dev')
+                bwrap_args.append('/dev')
+                bwrap_args.append('--tmpfs')
+                bwrap_args.append('/tmp')
+                bwrap_args.append('--clearenv')
+                bwrap_args.append('--unshare-pid')
+                pass_env('HOME')
+                pass_env('PATH')
+                pass_env('LANG')
+                pass_env('TERM')
+                pass_env('XDG_RUNTIME_DIR')
+            case "-opt":
+                bwrap_args.append('--ro-bind')
+                bwrap_args.append('/opt')
+                bwrap_args.append('/opt')
+            case "-sandhome":
+                bwrap_args.append('--bind')
+                bwrap_args.append(home_dir + '/sandboxes/' + sys.argv[argi + 2])
+                bwrap_args.append(home_dir)
+                bwrap_args.append('--chdir')
+                bwrap_args.append(home_dir)
+                skip = True
+            case "-audio":
+                bwrap_args.append('--ro-bind')
+                bwrap_args.append(xdg_runtime_dir + '/pulse/native')
+                bwrap_args.append(xdg_runtime_dir + '/pulse/native')
+    
+                bwrap_args.append('--ro-bind-try')
+                bwrap_args.append(home_dir + "/.config/pulse/cookie")
+                bwrap_args.append(home_dir + "/.config/pulse/cookie")
+            
+                bwrap_args.append('--ro-bind-try')
+                bwrap_args.append(xdg_runtime_dir + '/pipewire-0')
+                bwrap_args.append(xdg_runtime_dir + '/pipewire-0')
+            case "-wayland":
+                bwrap_args.append('--setenv')
+                bwrap_args.append('WAYLAND_DISPLAY')
+                wayland_display = os.environ['WAYLAND_DISPLAY']
+                bwrap_args.append(wayland_display)
+    
+                bwrap_args.append('--ro-bind')
+                bwrap_args.append(xdg_runtime_dir + '/' + wayland_display)
+                bwrap_args.append(xdg_runtime_dir + '/' + wayland_display)
+            case '-gpu':
+                bwrap_args.append('--dev-bind')
+                bwrap_args.append('/dev/dri')
+                bwrap_args.append('/dev/dri')
+                bwrap_args.append('--ro-bind')
+                bwrap_args.append('/sys')
+                bwrap_args.append('/sys')
+            case '-webcam':
+                bwrap_args.append('--dev-bind')
+                bwrap_args.append('/dev/v4l')
+                bwrap_args.append('/dev/v4l')
+                bwrap_args.append('--dev-bind')
+                bwrap_args.append('/dev/video0')
+                bwrap_args.append('/dev/video0')
+            # case '-dbus':
+                # xdg-dbus-proxy  $DBUS_SESSION_BUS_ADDRESS $XDG_RUNTIME_DIR/xdg-dbus-proxy/firefox-secondary-instance.sock --filter --log --talk=org.mozilla.firefox.* &
+
+            case _:
+                bwrap_args.append(arg)
+        # else:
+        #     bwrap_args.append(arg)
+    
+    
+    print(bwrap_args)
+    
+    subprocess.run(bwrap_args) 
+
+if __name__ == '__main__':
+    main()
