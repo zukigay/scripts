@@ -1,0 +1,3 @@
+#!/bin/sh
+fuzzel_g="$(ls ~/Games/launchers | fuzzel -d)"
+~/Games/launchers/$fuzzel_g
