@@ -48,4 +48,9 @@ while [ "$(pgrep -x 'dwlb')" ]; do
 
     dwlb -status all "$tray$rs $vol $rs$volmic$rs $date"
     # dwlb -status all "$tray  $date"
+    if [ "$1" = "once" ] ; then
+        exit
+    fi
+    sleep 10
+
 done
