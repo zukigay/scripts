@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 GRIMDIR="$GRIM_DEFAULT_DIR"
 while read output ; do 
     grim -o "$output" "$GRIMDIR/$(date "+%Y%m%e_%Hh%Mm%Ss_")grim_$output.png"
