@@ -24,12 +24,10 @@ def main():
     xdg_runtime_dir = os.environ['XDG_RUNTIME_DIR']
     home_dir = os.environ['HOME']
     # argv = len(sys.argv) - 1
-    arglen = len(sys.argv)
+    arglen = len(sys.argv) - 1
     skip = False
-    for argi in range(arglen - 1):
-        if skip == True:
-            skip = False
-            continue 
+    argi = 0
+    while argi < arglen:
         arg = sys.argv[argi + 1]
         match arg:
             case "-base":
@@ -74,7 +72,17 @@ def main():
                 bwrap_args.append(home_dir)
                 bwrap_args.append('--chdir')
                 bwrap_args.append(home_dir)
-                skip = True
+
+                bwrap_args.append('--bind')
+                bwrap_args.append(home_dir + '/sandboxes/flatpak-info')
+                bwrap_args.append(os.environ['XDG_RUNTIME_DIR'] + '/flatpak-info')
+
+                bwrap_args.append('--bind')
+                bwrap_args.append(home_dir + '/sandboxes/flatpak-info')
+                bwrap_args.append('/flatpak-info')
+
+
+                argi = argi + 1
             case "-audio":
                 bwrap_args.append('--ro-bind')
                 bwrap_args.append(xdg_runtime_dir + '/pulse/native')
@@ -110,18 +118,41 @@ def main():
                 bwrap_args.append('--dev-bind')
                 bwrap_args.append('/dev/video0')
                 bwrap_args.append('/dev/video0')
-            # case '-dbus':
-                # xdg-dbus-proxy  $DBUS_SESSION_BUS_ADDRESS $XDG_RUNTIME_DIR/xdg-dbus-proxy/firefox-secondary-instance.sock --filter --log --talk=org.mozilla.firefox.* &
-
+            case '-e':
+                argi = argi + 1
+                while argi < arglen:
+                    argi = argi + 1
+                    bwrap_args.append(sys.argv[argi])
+            case '-dbus':
+                if argi < arglen + 1:
+                    dbus_sockid = "dbus-sock-id"
+                    dbus_proxy_args = ['xdg-dbus-proxy',os.environ['DBUS_SESSION_BUS_ADDRESS'],os.environ['XDG_RUNTIME_DIR'] + '/xdg-dbus-proxy/' + dbus_sockid +  '.sock','--filter','--log','--talk=org.freedesktop.portal.*']
+                    while argi < arglen:
+                        arg = sys.argv[argi + 2]
+                        if arg[0] == '-' and arg[1] == '-':
+                            if arg[2] == 't' and arg[3] == 'a' and arg[4] == 'l' and arg[5] == 'k':
+                                dbus_proxy_args.append(arg)
+                                argi = argi + 1
+                            elif arg[2] == 'o' and arg[3] == 'w' and arg[4] == 'n':
+                                dbus_proxy_args.append(arg)
+                                argi = argi + 1
+                            else:
+                                break
+                        else:
+                            break
+                    print(dbus_proxy_args)
+                    # subprocess.Popen(dbus_proxy_args,start_new_session=True) 
             case _:
                 bwrap_args.append(arg)
         # else:
         #     bwrap_args.append(arg)
+        argi = argi + 1
     
     
     print(bwrap_args)
     
-    subprocess.run(bwrap_args) 
+    # subprocess.run(bwrap_args) 
+    # subprocess.Popen(bwrap_args,start_new_session=True) 
 
 if __name__ == '__main__':
     main()
