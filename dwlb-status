@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/sh
 
 addtray() {
     local pidname=$1
