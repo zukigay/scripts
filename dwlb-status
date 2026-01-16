@@ -1,5 +1,6 @@
 #!/usr/bin/sh
 
+self="$0"
 addtray() {
     local pidname=$1
     local text=$2
@@ -28,9 +29,9 @@ while [ "$(pgrep -x 'dwlb')" ]; do
     fi
 
     # mic control module
-    volup="wpctl set-volume @DEFAULT_AUDIO_SOURCE@ 5%+ && dwlb-status"
-    voldown="wpctl set-volume @DEFAULT_AUDIO_SOURCE@ 5%- && dwlb-status"
-    volmute="wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle && dwlb-status"
+    volup="wpctl set-volume @DEFAULT_AUDIO_SOURCE@ 5%+ && $self"
+    voldown="wpctl set-volume @DEFAULT_AUDIO_SOURCE@ 5%- && $self"
+    volmute="wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle && $self"
     # volmic="^bg()^us($volup)^ds($voldown)^lm($volmute)$(wpctl get-volume @DEFAULT_AUDIO_SOURCE@ | sed 's/Volume://')"
     voltext="$(wpctl get-volume @DEFAULT_AUDIO_SOURCE@ | sed 's/Volume://')"
     if [ -z "$(echo "$voltext" | grep "MUTED" )" ] ; then
@@ -51,11 +52,16 @@ while [ "$(pgrep -x 'dwlb')" ]; do
     # title
     pstatus="$(playerctl status)"
     if [ "$pstatus" = "Playing" ] ; then
+        picon=""
+    elif [ "$pstatus" = "Paused" ]; then
+        picon=""
+    fi
+    if [ -n "$picon" ] ; then
         album="$(playerctl metadata album)"
         if [ -n "$album" ] ; then
             album="$album - "
         fi
-        dwlb -title all "$album$(playerctl metadata title)"
+        dwlb -title all "^lm(playerctl play-pause && $self)$picon $album$(playerctl metadata title)"
     else 
         dwlb -title all " "
     fi
