@@ -49,11 +49,16 @@ while [ "$(pgrep -x 'dwlb')" ]; do
     dwlb -status all "$tray$rs $vol $rs$volmic$rs $date"
 
     # title
-    album="$(playerctl metadata album)"
-    if [ -n "$album" ] ; then
-        album="$album - "
+    pstatus="$(playerctl status)"
+    if [ "$pstatus" = "Playing" ] ; then
+        album="$(playerctl metadata album)"
+        if [ -n "$album" ] ; then
+            album="$album - "
+        fi
+        dwlb -title all "$album$(playerctl metadata title)"
+    else 
+        dwlb -title all " "
     fi
-    dwlb -title all "$(playerctl status), $album$(playerctl metadata title)"
 
     # dwlb -status all "$tray  $date"
     if [ "$1" = "once" ] ; then
