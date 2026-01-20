@@ -1,4 +1,3 @@
-#!/usr/bin/tcc -run -lX11
 #include <stdio.h>
 #include <stdbool.h>
 #include <string.h>
