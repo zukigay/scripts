@@ -119,17 +119,17 @@ int main()
             unsigned char * wm_class;
             if (get_classname(win,&wm_class)) {
                 char * wm_name = get_prop(win,"_NET_WM_NAME");
-                printf("wm_name %s wm_class %s\n",wm_name,wm_class);
+                // printf("wm_name %s wm_class %s\n",wm_name,wm_class);
                 Program * p;
                 for (p = prog_list; p < END(prog_list); p++) {
                     if (strcmp(wm_name,p->wm_name) == 0 && strcmp(wm_class,p->wm_class) == 0) {
-                        printf("unmute %s\n",p->process_id);
+                        // printf("unmute %s\n",p->process_id);
                         mute_prog(p->process_id,"0");
                         p->running = true;
                     } else if (p->running == true) {
                         /* mute program */
                         mute_prog(p->process_id,"1");
-                        printf("mute %s\n",p->process_id);
+                        // printf("mute %s\n",p->process_id);
                     }
                 }
             }
@@ -139,7 +139,7 @@ int main()
                 if (p->running == true) {
                     /* mute program */
                     mute_prog(p->process_id,"1");
-                    printf("mute %s\n",p->process_id);
+                    // printf("mute %s\n",p->process_id);
                 }
             }
         }
