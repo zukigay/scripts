@@ -128,6 +128,7 @@ int main()
                         p->running = true;
                     } else if (p->running == true) {
                         /* mute program */
+                        p->running = false;
                         mute_prog(p->process_id,"1");
                         // printf("mute %s\n",p->process_id);
                     }
@@ -138,6 +139,7 @@ int main()
             for (p = prog_list; p < END(prog_list); p++) {
                 if (p->running == true) {
                     /* mute program */
+                    p->running = false;
                     mute_prog(p->process_id,"1");
                     // printf("mute %s\n",p->process_id);
                 }
