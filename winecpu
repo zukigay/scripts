@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 nproc=$(nproc)
 str="$nproc:0"
