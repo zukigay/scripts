@@ -1,0 +1,22 @@
+#!/usr/bin/perl
+
+use Cwd;
+my $loop = 1;
+while ($loop == 1) {
+    print getcwd();
+    print "\n";
+    if (-e "makefile") {
+        $loop = 0;
+        my @cmd = ('make');
+        foreach my $argnum (0 .. $#ARGV) {
+            push @cmd,$ARGV[$argnum];
+        }
+        system(@cmd);
+    } else {
+        if (getcwd() eq "/") {
+            print "no makefile found\n";
+            exit(1);
+        }
+        chdir "..";
+    }
+}
