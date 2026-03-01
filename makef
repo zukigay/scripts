@@ -2,8 +2,7 @@
 loop=true
 while [ $loop = true ] ; do
     if [ -f "Makefile" ] || [ -f "makefile" ] ; then
-        make $@
-        exit $?
+        exec make $@
     fi
     if [ "$PWD" = "/" ] ; then
         loop=false
