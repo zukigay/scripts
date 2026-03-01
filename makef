@@ -1,0 +1,13 @@
+#!/usr/bin/sh
+loop=true
+while [ $loop = true ] ; do
+    if [ -f "Makefile" ] || [ -f "makefile" ] ; then
+        make $@
+        exit $?
+    fi
+    if [ "$PWD" = "/" ] ; then
+        loop=false
+    else
+        cd ..
+    fi
+done
