@@ -11,7 +11,7 @@ while ($loop == 1) {
         foreach my $argnum (0 .. $#ARGV) {
             push @cmd,$ARGV[$argnum];
         }
-        system(@cmd);
+        exec(@cmd);
     } else {
         if (getcwd() eq "/") {
             print "no makefile found\n";
