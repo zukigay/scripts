@@ -51,10 +51,11 @@ while [ "$(pgrep -x 'dwlb')" ]; do
 
     # title
     pstatus="$(playerctl status)"
+    picon=""
     if [ "$pstatus" = "Playing" ] ; then
-        picon=""
-    elif [ "$pstatus" = "Paused" ]; then
         picon=""
+    elif [ "$pstatus" = "Paused" ]; then
+        picon=""
     fi
     if [ -n "$picon" ] ; then
         album="$(playerctl metadata album)"
