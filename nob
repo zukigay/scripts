@@ -1,6 +1,9 @@
 #!/usr/bin/sh
 loop=true
 while [ $loop = true ] ; do
+    if [ -f "Makefile" ] || [ -f "makefile" ] ; then
+        exec make $@
+    fi
     if [ -f "nob" ] ; then
         exec ./nob $@
     fi
@@ -15,3 +18,5 @@ while [ $loop = true ] ; do
         cd ..
     fi
 done
+echo "failed to find makefile/nob"
+exit 5
