@@ -1,4 +1,4 @@
-all: spirefix crtfree fixkeyboard
+all: spirefix crtfree
 fixkeyboard: fixkeyboard.asm
 	nasm -f elf64 fixkeyboard.asm -o fixkeyboard.o
 	ld fixkeyboard.o -o fixkeyboard
