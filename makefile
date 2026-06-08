@@ -8,7 +8,3 @@ crtfree: crtfree.c
 	cc crtfree.c -nostdlib -o crtfree -Wall -Wextra
 clean:
 	rm spirefix
-install: fixkeyboard
-	cp ./fixkeyboard /usr/bin/
-	chown root /usr/bin/fixkeyboard
-	chmod u+s /usr/bin/fixkeyboard
