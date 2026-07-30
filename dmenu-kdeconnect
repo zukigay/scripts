@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+# simple kde connect script
+# defaults to first device unless argument is passed at which point that device is used instead
+# or if DMENU_KDE_CONNECT_DEVICE is set then it will use that instead
+if [ -n "$DMENU_KDE_CONNECT_DEVICE" ] ; then
+    idapi="$DMENU_KDE_CONNECT_DEVICE"
+    name="$DMENU_KDE_CONNECT_DEVICE"
+else
+    if [ -z "$1" ] ; then
+        read -r line < <(kdeconnect-cli -a --id-name-only)
+        set -- $line
+        id=$1
+        shift
+        name=$@
+        idapi="-d $id"
+    else
+        name="$@"
+        idapi="-n $@"
+    fi
+fi
+action="$(printf "send clipboard\nshare\nping\nring\nexit" | fuzzel -d -p "$name:")"
+case $action in
+    "send clipboard")
+        kdeconnect-cli $idapi --send-clipboard
+        ;;
+    ping)
+        kdeconnect-cli $idapi --ping
+        ;;
+    ring)
+        kdeconnect-cli $idapi --ring
+        ;;
+    share)
+        kdeconnect-cli --share "$(kdialog --title=Select Files --getopenfilename)" $idapi
+        ;;
+    exit)
+        exit 0
+        ;;
+    "")
+        exit 0
+        ;;
+    *)
+        printf "unknown '$action'\n"
+        exit 1
+        ;;
+esac
