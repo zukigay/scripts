@@ -2,12 +2,20 @@
 # simple kde connect script
 # defaults to first device unless argument is passed at which point that device is used instead
 # or if DMENU_KDE_CONNECT_DEVICE is set then it will use that instead
+
+kd="$(kdeconnect-cli -a --id-name-only)"
+if [ -z "$kd" ] ; then
+    printf "no devices\n"
+    notify-send -u low "kdeconnect dmenu" "no devices"
+    exit 1
+fi
+
 if [ -n "$DMENU_KDE_CONNECT_DEVICE" ] ; then
     idapi="$DMENU_KDE_CONNECT_DEVICE"
     name="$DMENU_KDE_CONNECT_DEVICE"
 else
     if [ -z "$1" ] ; then
-        read -r line < <(kdeconnect-cli -a --id-name-only)
+        read -r line <<<"$kd"
         set -- $line
         id=$1
         shift
