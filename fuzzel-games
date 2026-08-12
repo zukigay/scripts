@@ -9,6 +9,12 @@ while [ true ]; do
         cd "$fuzzel_g"
     elif [[ $fuzzel_g == *.exe ]] ; then
         exec wine "./$fuzzel_g"
+    # TODO consider improving this code by also adding stuff for handling tar files etc
+    elif [[ $fuzzel_g == *.zip ]] ; then
+        prompt="$(printf "yes\nno" | fuzzel -d -p "would you like to unzip $fuzzel_g?")"
+        if [ "$prompt" == "yes" ] ; then
+            unzip "$fuzzel_g"
+        fi
     elif [ -x "$fuzzel_g" ] ; then
         exec "./$fuzzel_g"
     fi
