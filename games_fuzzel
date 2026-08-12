@@ -1,3 +1,5 @@
 #!/bin/sh
 fuzzel_g="$(ls ~/Games/launchers | fuzzel -d)"
-~/Games/launchers/$fuzzel_g
+if [ -n "$fuzzel_g" ] ; then
+~/Games/launchers/"$fuzzel_g"
+fi
