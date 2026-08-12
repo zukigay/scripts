@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+cd ~/Games
+while [ true ]; do 
+    fuzzel_g="$(ls "$PWD" | fuzzel -d)"
+    if [ -z "$fuzzel_g" ] ; then
+        break
+    fi
+    if [ -d "$fuzzel_g" ] ; then
+        cd "$fuzzel_g"
+    elif [[ $fuzzel_g == *.exe ]] ; then
+        exec wine "./$fuzzel_g"
+    elif [ -x "$fuzzel_g" ] ; then
+        exec "./$fuzzel_g"
+    fi
+done
