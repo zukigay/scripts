@@ -11,9 +11,17 @@ while [ true ]; do
         exec wine "./$fuzzel_g"
     # TODO consider improving this code by also adding stuff for handling tar files etc
     elif [[ $fuzzel_g == *.zip ]] ; then
-        prompt="$(printf "yes\nno\ndelete" | fuzzel -d -p "would you like to unzip $fuzzel_g?")"
+        # TODO consider diffrent name then both
+        prompt="$(printf "yes\nno\ndelete\nboth" | fuzzel -d -p "would you like to unzip $fuzzel_g?")"
         if [ "$prompt" == "yes" ] ; then
-            unzip "$fuzzel_g"
+            unzip -n "$fuzzel_g" && notify-send -u low "unzipped" "$fuzzel_g"
+        elif [ "$prompt" == "both" ] ; then
+            unzip -n "$fuzzel_g"
+            error_code="$?"
+            if [ "$error_code" == 0 ] ; then
+                notify-send -u low "unzipped" "$fuzzel_g"
+                rm "$fuzzel_g"
+            fi
         elif [ "$prompt" == "delete" ] ; then
             rm "$fuzzel_g"
         fi
