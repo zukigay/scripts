@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 while read type ; do 
 if [ "$type" = "_NET_ACTIVE_WINDOW(WINDOW): window id # 0x0" ]
 then
