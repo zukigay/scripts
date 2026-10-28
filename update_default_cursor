@@ -1,0 +1,93 @@
+#!/bin/env python3
+import os
+import subprocess
+
+def error(msg):
+    print(msg)
+    exit()
+
+# def dmenu(items):
+#     args = [ "fuzzel", "-d" ]
+#     proc = subprocess.Popen( args, universal_newlines=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+#     with proc.stdin:
+#         for item in items:
+#             proc.stdin.write(item)
+#             proc.stdin.write('\n')
+#     if proc.wait() == 0:
+#         return proc.stdout.read().rstrip('\n')
+#     return None
+
+def get_cursor():
+    args = [ "gsettings", "get", "org.gnome.desktop.interface", "cursor-theme" ]
+    cursor = subprocess.run(args, capture_output=True,text=True)
+    return cursor.stdout.rstrip('\n').replace("'","")
+
+
+# get environment var with fallback
+def env_get(var_name,fallback):
+    var = os.environ[var_name]
+    if var == None:
+        return fallback
+    else:
+        return var
+
+def update_symlink(path,item):
+    print(path,item)
+    if os.path.exists(path):
+        if os.path.islink(path):
+            os.unlink(path)
+        else:
+            error("default icon path " + path + " exists and is not a symlink please remove it to use the script properly")
+    os.symlink(item,path)
+
+def get_cursor_path(cursor_name):
+    home = os.environ['HOME'] 
+    icon_paths = [
+        os.environ['HOME'] + "/.icons",
+        env_get("XDG_DATA_HOME",home + "/.local/share") + "/icons",
+        "/usr/share/icons"
+    ]
+    for icon_path in icon_paths:
+        file_list = os.listdir(icon_path)
+        for file in file_list:
+            if file == cursor_name:
+                return icon_path + "/" + cursor_name
+    return None
+
+def main():
+    home = os.environ['HOME'] 
+    config_dir = env_get("XDG_CONFIG_HOME",home + "/.config")
+    icons_folder = home + "/.icons"
+    cursor_name = get_cursor()
+    cursor_path = get_cursor_path(cursor_name)
+    if cursor_path == None:
+        error("unable to find icon \"" + cursor_name + "\"")
+
+    # set defualt fallback
+    update_symlink(icons_folder + "/default",cursor_path)
+    update_symlink(env_get("XDG_DATA_HOME",home + "/.local/share") + "/icons/default",cursor_path)
+
+    # set xcursor (source this file on startup)
+    # not actually need
+    # with open(config_dir + "/XCURSOR.sh", "w") as f:
+    #     f.write("export XCURSOR=\"" + icon_name + "\"")
+
+
+
+
+
+
+
+# set -e
+# set -u
+# set -x
+# cursor=$(echo "$(ls ~/.icons)" | fuzzel -d)
+# cursor_path="$HOME/.icons/$cursor"
+# mkdir -p "~/.local/share/icons"
+# if [ -e "~/.local/share/icons/default" ]; then
+# rm "~/.local/share/icons/default"
+# fi
+# ln --symbolic "$cursor_path" ~/.local/share/icons/default
+
+if __name__ == "__main__":
+    main()
